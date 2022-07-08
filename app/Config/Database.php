@@ -32,12 +32,12 @@ class Database extends Config
      */
     public $default = [
         'DSN'      => '',
-        'hostname' =>  getenv('hostname'),
-        'username' =>  getenv('username'),
-        'password' =>  getenv('password'),
-        'database' =>  getenv('database'),
-        'DBDriver' =>  getenv('DBDriver'),
-        'DBPrefix' =>  getenv('DBPrefix'),
+        'hostname' =>  'localhost',
+        'username' =>  'root',
+        'password' => '',
+        'database' =>  'ihomis_latest',
+        'DBDriver' =>  'MySQLi',
+        'DBPrefix' =>  '',
         'pConnect' => false,
         'DBDebug'  => (ENVIRONMENT !== 'production'),
         'charset'  => 'utf8',
@@ -47,7 +47,7 @@ class Database extends Config
         'compress' => false,
         'strictOn' => false,
         'failover' => [],
-        'port'     =>  getenv('DBPort'),
+        'port'     =>  '3306',
     ];
 
     /**
