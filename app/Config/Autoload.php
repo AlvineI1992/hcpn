@@ -43,7 +43,8 @@ class Autoload extends AutoloadConfig
     public $psr4 = [
         APP_NAMESPACE => APPPATH, // For custom app namespace
         'Config'      => APPPATH . 'Config',
-        'IonAuth' => ROOTPATH . 'ion_auth'
+        'IonAuth' => ROOTPATH . 'ion_auth',
+        'Referral' => APPPATH . 'Models/ReferralModel.php'
     ];
    
 
@@ -67,7 +68,9 @@ class Autoload extends AutoloadConfig
      *
      * @var array<string, string>
      */
-    public $classmap = [];
+    public $classmap = [
+    
+    ];
 
     /**
      * -------------------------------------------------------------------
