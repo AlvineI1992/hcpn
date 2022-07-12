@@ -35,18 +35,21 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = [];
+    protected $helpers = ['form', 'utility'];
 
     /**
      * Constructor.
      */
+
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
-
+     
         // Preload any models, libraries, etc, here.
-
+        $this->article = new \App\Models\ReferralModel();
         // E.g.: $this->session = \Config\Services::session();
     }
+
+  
 }

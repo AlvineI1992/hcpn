@@ -36,7 +36,10 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 
-$routes->get('/', 'ReferralWsController::index');
+$routes->get('Referral_ws/wsdl', 'ReferralWsController::index');
+$routes->post('Referral_ws/wsdl', 'ReferralWsController::index');
+$routes->get('Referral_ws/client', 'ReferralWsController::client');
+$routes->post('Referral_ws/client', 'ReferralWsController::client');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

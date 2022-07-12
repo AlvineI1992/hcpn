@@ -9,7 +9,6 @@ class ReferralModel extends Model
     protected $info = 'referral_information';
     protected $clinic = 'referral_clinical';
     protected $logs = 'referral_logs';
-
     protected $demographic = 'referral_patientdemo';
     protected $patient = 'referral_patientinfo';
     protected $provider = 'referral_provider';
@@ -50,173 +49,166 @@ class ReferralModel extends Model
 
 	public function getPatientInfo($LogID,$fhudcode)
 	{
-
-        $sql = $this->db->table($this->clinic);
-
-
-        
-		 $this->db->select('
-		 referral_information.fhudFrom,
-		 referral_information.fhudto,
-		 referral_information.typeOfReferral,
-		 referral_information.referralReason,
-		 referral_information.otherReasons,
-		 referral_information.remarks,
-		 referral_information.referralContactPerson,
-		 referral_information.referralContactPersonDesignation,
-		 referral_information.rprhreferral,
-		 referral_information.rprhreferralmethod,
-		 referral_information.status,
-		 referral_information.refferalDate,
-		 referral_information.refferalTime,
-		 referral_information.referralCategory,
-		 referral_information.referringProviderContactNumber,
-		 referral_information.referringProvider,
-		 referral_patientinfo.FamilyID,
-		 referral_patientinfo.phicNum,
-		 referral_patientinfo.caseNum,
-		 referral_patientinfo.patientLastName,
-		 referral_patientinfo.patientFirstName,
-		 referral_patientinfo.patientMiddlename,
-		 referral_patientinfo.patientSuffix,
-		 referral_patientinfo.patientBirthDate,
-		 referral_patientinfo.patientSex,
-		 referral_patientinfo.patientCivilStatus,
-		 referral_patientinfo.patientReligion,
-		 referral_patientinfo.patientBloodType,
-		 referral_patientinfo.patientBloodTypeRH,
-		 referral_patientdemo.patientStreetAddress,
-		 referral_patientdemo.patientBrgyCode as patientBrgyAddress,
-		 referral_patientdemo.patientMundCode as patientMunAddress,
-		 referral_patientdemo.patientProvCode as patientProvAddress,
-		 referral_patientdemo.patientRegCode as patientRegAddress,
-		 referral_patientdemo.patientZipCode as patientZipAddress,
-		 
-		(select CONCAT(ref_facilities.facility_name,",",ref_facilities.hfhudcode)  from ref_facilities  where  ref_facilities.hfhudcode =referral_information.fhudFrom) as intra,
-		(select CONCAT(ref_facilities.facility_name,",",ref_facilities.hfhudcode) from ref_facilities where ref_facilities.hfhudcode =referral_information.fhudTo) as inter
-		 
-		 '
-		 
-		 
-		 
-		 
-		 
-		 
-		 );
-		 $this->db->from('referral_information');
-		 $this->db->join('referral_patientinfo','referral_information.LogID=referral_patientinfo.LogID','left');
-		 $this->db->join('referral_patientdemo','referral_patientdemo.LogID=referral_patientinfo.LogID','left');
-		 $this->db->where('referral_information.LogID',$LogID);
-		 $this->db->where('referral_information.fhudTo',$fhudcode);
-		 return $this->db->get()->row();
+		$query = $this->db->query('
+				referral_information.fhudFrom,
+				referral_information.fhudto,
+				referral_information.typeOfReferral,
+				referral_information.referralReason,
+				referral_information.otherReasons,
+				referral_information.remarks,
+				referral_information.referralContactPerson,
+				referral_information.referralContactPersonDesignation,
+				referral_information.rprhreferral,
+				referral_information.rprhreferralmethod,
+				referral_information.status,
+				referral_information.refferalDate,
+				referral_information.refferalTime,
+				referral_information.referralCategory,
+				referral_information.referringProviderContactNumber,
+				referral_information.referringProvider,
+				referral_patientinfo.FamilyID,
+				referral_patientinfo.phicNum,
+				referral_patientinfo.caseNum,
+				referral_patientinfo.patientLastName,
+				referral_patientinfo.patientFirstName,
+				referral_patientinfo.patientMiddlename,
+				referral_patientinfo.patientSuffix,
+				referral_patientinfo.patientBirthDate,
+				referral_patientinfo.patientSex,
+				referral_patientinfo.patientCivilStatus,
+				referral_patientinfo.patientReligion,
+				referral_patientinfo.patientBloodType,
+				referral_patientinfo.patientBloodTypeRH,
+				referral_patientdemo.patientStreetAddress,
+				referral_patientdemo.patientBrgyCode as patientBrgyAddress,
+				referral_patientdemo.patientMundCode as patientMunAddress,
+				referral_patientdemo.patientProvCode as patientProvAddress,
+				referral_patientdemo.patientRegCode as patientRegAddress,
+				referral_patientdemo.patientZipCode as patientZipAddress,
+				(select CONCAT(ref_facilities.facility_name,",",ref_facilities.hfhudcode)  from ref_facilities  where  ref_facilities.hfhudcode =referral_information.fhudFrom) as intra,
+				(select CONCAT(ref_facilities.facility_name,",",ref_facilities.hfhudcode) from ref_facilities where ref_facilities.hfhudcode =referral_information.fhudTo) as inter
+			FROM
+				referral_information
+				LEFT  JOIN referral_patientinfo ON referral_information.LogID=referral_patientinfo.LogID
+				LEFT  JOIN referral_patientdemo ON referral_patientdemo.LogID=referral_patientinfo.LogID
+			WHERE
+				referral_information.LogID = "'.$LogID.'"
+				referral_information.fhudTo= "'.$fhudcode.'"');
+		 return  $query->getRow();
 	}
 	
 	
 	public function referralInfo($LogID)
 	{
-		 $this->db->select('
-		 referral_information.fhudFrom,
-		 referral_information.fhudto,
-		 referral_information.typeOfReferral,
-		 referral_information.referralReason,
-		 referral_information.otherReasons,
-		 referral_information.remarks,
-		 referral_information.referralContactPerson,
-		 referral_information.referralContactPersonDesignation,
-		 referral_information.rprhreferral,
-		 referral_information.rprhreferralmethod,
-		 referral_information.status,
-		 referral_information.refferalDate,
-		 referral_information.refferalTime,
-		 referral_information.referralCategory,
-		 referral_information.referringProviderContactNumber,
-		 referral_information.referringProvider,
-		 referral_patientinfo.FamilyID,
-		 referral_patientinfo.phicNum,
-		 referral_patientinfo.caseNum,
-		 referral_patientinfo.patientLastName,
-		 referral_patientinfo.patientFirstName,
-		 referral_patientinfo.patientMiddlename,
-		 referral_patientinfo.patientSuffix,
-		 referral_patientinfo.patientBirthDate,
-		 referral_patientinfo.patientSex,
-		 referral_patientinfo.patientCivilStatus,
-		 referral_patientinfo.patientReligion,
-		 referral_patientinfo.patientBloodType,
-		 referral_patientinfo.patientBloodTypeRH,
-		 referral_patientdemo.patientStreetAddress,
-		 referral_patientdemo.patientBrgyCode as patientBrgyAddress,
-		 referral_patientdemo.patientMundCode as patientMunAddress,
-		 referral_patientdemo.patientProvCode as patientProvAddress,
-		 referral_patientdemo.patientRegCode as patientRegAddress,
-		 referral_patientdemo.patientZipCode as patientZipAddress');
-		 $this->db->from('referral_information');
-		 $this->db->join('referral_patientinfo','referral_information.LogID=referral_patientinfo.LogID','left');
-		 $this->db->join('referral_patientdemo','referral_patientdemo.LogID=referral_patientinfo.LogID','left');
-		 $this->db->where('referral_information.LogID',$LogID);
-		 return $this->db->get()->row();
+		$query = $this->db->query('
+				referral_information.fhudFrom,
+				referral_information.fhudto,
+				referral_information.typeOfReferral,
+				referral_information.referralReason,
+				referral_information.otherReasons,
+				referral_information.remarks,
+				referral_information.referralContactPerson,
+				referral_information.referralContactPersonDesignation,
+				referral_information.rprhreferral,
+				referral_information.rprhreferralmethod,
+				referral_information.status,
+				referral_information.refferalDate,
+				referral_information.refferalTime,
+				referral_information.referralCategory,
+				referral_information.referringProviderContactNumber,
+				referral_information.referringProvider,
+				referral_patientinfo.FamilyID,
+				referral_patientinfo.phicNum,
+				referral_patientinfo.caseNum,
+				referral_patientinfo.patientLastName,
+				referral_patientinfo.patientFirstName,
+				referral_patientinfo.patientMiddlename,
+				referral_patientinfo.patientSuffix,
+				referral_patientinfo.patientBirthDate,
+				referral_patientinfo.patientSex,
+				referral_patientinfo.patientCivilStatus,
+				referral_patientinfo.patientReligion,
+				referral_patientinfo.patientBloodType,
+				referral_patientinfo.patientBloodTypeRH,
+				referral_patientdemo.patientStreetAddress,
+				referral_patientdemo.patientBrgyCode as patientBrgyAddress,
+				referral_patientdemo.patientMundCode as patientMunAddress,
+				referral_patientdemo.patientProvCode as patientProvAddress,
+				referral_patientdemo.patientRegCode as patientRegAddress,
+				referral_patientdemo.patientZipCode as patientZipAddress
+		 FROM
+				referral_information
+				LEFT  JOIN referral_patientinfo ON referral_information.LogID=referral_patientinfo.LogID
+				LEFT  JOIN referral_patientdemo ON referral_patientdemo.LogID=referral_patientinfo.LogID
+				WHERE 
+		 referral_information.LogID = "'.$LogID.'"');
+		 return  $query->getRow();
 	}
 	
 	public  function getReferProvider($LogID)
 	{	
-		$this->db->select('
-		referral_provider.provider_last as ProviderLast,
-		referral_provider.provider_first as ProviderFirst,
-		referral_provider.provider_middle as ProviderMiddle,
-		referral_provider.provider_suffix as ProviderSuffix,
-		referral_provider.provider_contact as ProviderContactNo,
-		referral_provider.provider_type as ProviderType');
-		$this->db->from('referral_provider');
-		$this->db->join('referral_information','referral_provider.LogID=referral_information.LogID','inner');
-		$this->db->where('referral_information.LogID',$LogID);
-		return $this->db->get()->result_array();
+		$query = $this->db->query('
+				referral_provider.provider_last as ProviderLast,
+				referral_provider.provider_first as ProviderFirst,
+				referral_provider.provider_middle as ProviderMiddle,
+				referral_provider.provider_suffix as ProviderSuffix,
+				referral_provider.provider_contact as ProviderContactNo,
+				referral_provider.provider_type as ProviderType
+			FROM
+				referral_provider
+			INNER JOIN referral_provider.LogID=referral_information.LogID
+			WHERE 
+				referral_information.LogID= "'.$LogID.'"');
+		return $query->getResultArray();
 	}
 	
 	public  function getReferralfhud($fhudcode)
 	{
-		$this->db->select('
-		 referral_information.LogID,
-		 referral_information.fhudFrom,
-		 referral_information.fhudto,
-		 referral_information.typeOfReferral,
-		 referral_information.referralReason,
-		 referral_information.otherReasons,
-		 referral_information.remarks,
-		 referral_information.referralContactPerson,
-		 referral_information.referralContactPersonDesignation,
-		 referral_information.rprhreferral,
-		 referral_information.rprhreferralmethod, 
-		 referral_information.status,
-		 referral_information.refferalDate,
-		 referral_information.refferalTime,
-		 referral_information.referralCategory,
-		 referral_information.referringProviderContactNumber,
-		 referral_information.referringProvider,
-		 referral_patientinfo.FamilyID,
-		 referral_patientinfo.phicNum,
-		 referral_patientinfo.caseNum,
-		 referral_patientinfo.patientLastName,
-		 referral_patientinfo.patientFirstName,
-		 referral_patientinfo.patientMiddlename,
-		 referral_patientinfo.patientSuffix,
-		 referral_patientinfo.patientBirthDate,
-		 referral_patientinfo.patientSex,
-		 referral_patientinfo.patientCivilStatus,
-		 referral_patientinfo.patientReligion,
-		 referral_patientinfo.patientBloodType,
-		 referral_patientinfo.patientBloodTypeRH,
-		 referral_patientinfo.patientContactNumber,
-		 referral_patientdemo.patientStreetAddress,
-		 referral_patientdemo.patientBrgyCode as patientBrgyAddress,
-		 referral_patientdemo.patientMundCode as patientMunAddress,
-		 referral_patientdemo.patientProvCode as patientProvAddress,
-		 referral_patientdemo.patientRegCode as patientRegAddress,
-		 referral_patientdemo.patientZipCode as patientZipAddress');
-		 $this->db->from('referral_information');
-		 $this->db->join('referral_patientinfo','referral_patientinfo.LogID=referral_information.LogID','inner');
-		 $this->db->join('referral_patientdemo','referral_patientdemo.LogID=referral_information.LogID','inner');
-		 $this->db->where('referral_information.fhudTo',$fhudcode);
-		 return $this->db->get()->result_array();
+		$query = $this->db->query('
+			referral_information.LogID,
+			referral_information.fhudFrom,
+			referral_information.fhudto,
+			referral_information.typeOfReferral,
+			referral_information.referralReason,
+			referral_information.otherReasons,
+			referral_information.remarks,
+			referral_information.referralContactPerson,
+			referral_information.referralContactPersonDesignation,
+			referral_information.rprhreferral,
+			referral_information.rprhreferralmethod, 
+			referral_information.status,
+			referral_information.refferalDate,
+			referral_information.refferalTime,
+			referral_information.referralCategory,
+			referral_information.referringProviderContactNumber,
+			referral_information.referringProvider,
+			referral_patientinfo.FamilyID,
+			referral_patientinfo.phicNum,
+			referral_patientinfo.caseNum,
+			referral_patientinfo.patientLastName,
+			referral_patientinfo.patientFirstName,
+			referral_patientinfo.patientMiddlename,
+			referral_patientinfo.patientSuffix,
+			referral_patientinfo.patientBirthDate,
+			referral_patientinfo.patientSex,
+			referral_patientinfo.patientCivilStatus,
+			referral_patientinfo.patientReligion,
+			referral_patientinfo.patientBloodType,
+			referral_patientinfo.patientBloodTypeRH,
+			referral_patientinfo.patientContactNumber,
+			referral_patientdemo.patientStreetAddress,
+			referral_patientdemo.patientBrgyCode as patientBrgyAddress,
+			referral_patientdemo.patientMundCode as patientMunAddress,
+			referral_patientdemo.patientProvCode as patientProvAddress,
+			referral_patientdemo.patientRegCode as patientRegAddress,
+			referral_patientdemo.patientZipCode as patientZipAddress
+		 FROM
+			 referral_information
+			LEFT  JOIN referral_patientinfo ON referral_information.LogID=referral_patientinfo.LogID
+			LEFT  JOIN referral_patientdemo ON referral_patientdemo.LogID=referral_patientinfo.LogID
+		WHERE 
+		referral_information.fhudTo = "'.$LogID.'"');
+		return $query->getResultArray();
 	}
 	
 	public  function getReferralTreatment($LogID)
@@ -292,15 +284,17 @@ class ReferralModel extends Model
 		
 	function existLog($value)
 	{
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM referral_information where referral_information.LogID ='$value'");
-		$row = $query->row();
+		$query = $this->db->query('
+		SELECT COUNT(*) AS count FROM referral_information where referral_information.LogID =="'.$value.'"');
+		$row = $query->getRow();
 		return ($row->count > 0) ? 1 : 0;
 	}
 	
 	function existsReturn($value)
 	{
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM referral_return where referral_return.LogID ='$value'");
-		$row = $query->row();
+		$query = $this->db->query('
+		SELECT COUNT(*) AS count FROM referral_return where referral_return.LogID ="'.$value.'"');
+		$row = $query->getRow();
 		return ($row->count > 0) ? 1 : 0;
 	}
 	
@@ -314,12 +308,16 @@ class ReferralModel extends Model
 		$this->db->delete('referral_track');
 	}
 	
-	function onlineFacilities($region)
+	public function onlineFacilities($region)
 	{
-		$this->db->select('facility_name,online_status')
-				  ->from('ref_facilities')
-				  ->where('region_code',$region);
-		return $this->db->get()->result_array();
+		$query = $this->db->query('
+		SELECT
+			facility_name,online_status
+		FROM 
+			ref_facilities
+		WHERE
+			region_code = "'.$region.'"');
+		return $query->getResultArray();
 	}
 	
 	function updateOnline($code,$status)

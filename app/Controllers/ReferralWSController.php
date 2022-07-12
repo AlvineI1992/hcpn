@@ -1,31 +1,28 @@
 <?php
 
 namespace App\Controllers;
+use nusoap_client;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ReferralModel;
 
 class ReferralWSController extends BaseController
 {
-   
-	public  function _soap_server()
-	{ 
-	$endpoint = base_url()."/Referral_ws/wsdl";
-    $server =$this->server = new soap_server();
-	$this->server->configureWSDL('homis',"urn:homis",$endpoint);
-    $this->server->wsdl->schemaTargetNamespace = base_url()."/Referral_ws/wsdl"; 
-	$server->register('wsCheck',             
-    array(), 
-	array("return"=>"xsd:string"),
-			'urn:homis',
-			'urn:homis#wsCheck',
-			'rpc',
-			'encoded',
-			'Webservice');
-			
-	$server->register('Refer',             
+	function __construct() {
+		$ep= base_url()."/Referral_ws/wsdl";
+		$server =$this->server = new \nusoap_server();
+		$this->server->configureWSDL('homis',$ep,$ep);
+		$this->server->wsdl->schemaTargetNamespace = $ep;  
+		$this->server->register('wsCheck',             
+		array(), 
+		array("return"=>"xsd:string"),
+				$ep,
+				$ep.'#wsCheck',
+				'rpc',
+				'encoded',
+				'Webservice'
+		);	
+		$server->register('Refer',             
 	array('data' => "xsd:string"), 
 	array("return"=>"xsd:string"),
 			'urn:homis',
@@ -46,8 +43,8 @@ class ReferralWSController extends BaseController
 	$server->register('online',             
 	array('data' => "xsd:string"), 
 	array("return"=>"xsd:string"),
-			'urn:homis',
-			'urn:homis#online',
+			$ep,
+			$ep.'#online',
 			'rpc',
 			'encoded',
 			'Webservice');
@@ -121,54 +118,79 @@ class ReferralWSController extends BaseController
 			'rpc',
 			'encoded',
 			'Webservice');
-	}
+
+		
+		
 	
+	}
+
+
+	function soapMethods()
+	{
+		$this->Refer();
+		$this->getReferralData();
+		$this->confirmReferral();
+		$this->getReferralFhud();
+		$this->referralreceive();
+		$this->referralrefer();
+		$this->referraldisch();
+	
+		$this->status();
+		$this->sendtoSeven();
+		$this->returnslip();
+	}
+
     function index()  
 	{
-		$model = new ReferralModel();
-        $data['data'] = $model->getClinicalInfo("REF2018-03-09-04:03:111");
-        echo json_encode($data['data']);
+		if($this->request->uri->getSegment(2)== "wsdl") {
+			 $_SERVER['QUERY_STRING'] =  "wsdl";
+		} else {
+			 $_SERVER['QUERY_STRING'] =  "";
+		}
+	
+		$this->response->setHeader('Content-Type', 'text/xml');
+
+		$this->server->service(file_get_contents("php://input"));
     }
-	
+
+
+	public function client()
+	{
+	// Config
+	 $client = new \nusoap_client('https://hcpn.test/Referral_ws/wsdl', true);
+	 
+		$client->soap_defencoding = 'UTF-8';
+		 $client->decode_utf8 = FALSE;
+
+		// Calls
+
+		 $result = $client->call('wsCheck','');
+		if ($client->fault) {
+			echo 'Error: ';
+			echo '<h2>Fault (Expect - The request contains an invalid SOAP body)</h2><pre>'; print_r($result); echo '</pre>';
+		} else {
+			// check result
+			$err_msg = $client->getError();
+
+			if ($err_msg) {
+				// Print error msg
+				echo '<h2>Constructor error</h2><pre>' . $err_msg . '</pre>';
+					echo '<h2>Debug</h2><pre>' . htmlspecialchars($client->getDebug(), ENT_QUOTES) . '</pre>';
+			} else {
+				// Print result
+				echo 'Result: ';
+				print_r($result);
+			}
+		}
+
+		$err = $client->getError();
+	}
+
+
+
+
 	//WEBSERVICE	
-   public function ServerDateTime() 
-	{
-		function wsCheck() 
-		{
-		global $wsdl, $client;
-	    $CI =& get_instance();
-        try 
-		{
-			$current_date = date('d-m-Y H:i:s');
-			 $data=array(
-			 "Response"=>'Webservice Is Online',
-			 "DateTime"=>$current_date);
-		 return json_encode($data);	
-        } 
-		catch (SoapFault $exception) 
-		{
-	    return json_encode($exception);
-        } 
-		}
-	}
-	
-	
-		//WEBSERVICE	
-   public function online() 
-	{
-		function online($region) 
-		{global $wsdl, $client;
-			$CI =& get_instance();
-			try 
-			{
-				$row=$CI->Referral_model->onlineFacilities($region); 
-				return json_encode($row);
-			}catch (SoapFault $exception) 
-			{
-				return json_encode($exception);
-			} 
-		}
-	}
+
 	
 	public function status() 
 	{
