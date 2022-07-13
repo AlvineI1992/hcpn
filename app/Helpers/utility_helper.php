@@ -183,6 +183,7 @@ if ( !function_exists('online') ) {
                     'consu'=>$provConsu,
                 );
                  $trans = $model->referralTransaction($param);
+                 return json_encode($trans);
                if($trans['code'] == '200'){ 
                     $response=array(
                        'LogID'=>$LogID,
@@ -311,7 +312,7 @@ function getReferralFhud($hfhudcode)
 				'rprhreferral'=>$patientInfo['referral'],
 				'rprhreferralmethod'=>$patientInfo['rprhreferralmethod'],
 				'status'=>$patientInfo['status'],
-				'referringContactNumber'=>$patientInfo['referringProviderContactNumber'],
+				'referringProviderContactNumber'=>$patientInfo['referringContactNumber'],
 				'referralDate'=>$patientInfo['refferalDate'],
 				'referralTime'=>$patientInfo['refferalTime'],
 				'referralCategory'=>$patientInfo['referralCategory'],

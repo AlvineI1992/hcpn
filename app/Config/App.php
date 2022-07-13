@@ -25,8 +25,8 @@ class App extends BaseConfig
      * @var string
      */
     
-     //public $baseURL = 'https://hcpn.test';
-     public $baseURL = BASE_URL;
+     public $baseURL = 'https://hcpn.test';
+     //public $baseURL = BASE_URL;
     /**
      * --------------------------------------------------------------------------
      * Index File
