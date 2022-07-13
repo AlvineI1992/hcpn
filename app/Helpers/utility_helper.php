@@ -80,7 +80,6 @@ if ( !function_exists('online') ) {
                $patientInfo=array('LogID'=>$LogID,
                'FamilyID'=>$data['familyNumber'],
                'phicNum'=>$data['phicNumber'],
-               'caseNum'=>$data['caseNumber'],
                'patientLastName'=>$data['patientLastName'],
                'patientFirstName'=>$data['patientFirstName'],
                'patientSuffix'=>$data['patientSuffix'],
@@ -255,7 +254,6 @@ if ( !function_exists('online') ) {
 			'referralCategory'=>$patientInfo->referralCategory,
 			'familyNumber'=>$patientInfo->FamilyID,
 			'phicNumber'=>$patientInfo->phicNum,
-			'caseNumber'=>$patientInfo->caseNum,
 			'patientLastName'=>$patientInfo->patientLastName,
 			'patientFirstName'=>$patientInfo->patientFirstName,
 			'patientSuffix'=>$patientInfo->patientSuffix,
@@ -317,7 +315,6 @@ function getReferralFhud($hfhudcode)
 				'referralCategory'=>$patientInfo['referralCategory'],
 				'familyNumber'=>$patientInfo['FamilyID'],
 				'phicNumber'=>$patientInfo['phicNum'],
-				'caseNumber'=>$patientInfo['caseNum'],
 				'patientLastName'=>$patientInfo['patientLastName'],
 				'patientFirstName'=>$patientInfo['patientFirstName'],
 				'patientSuffix'=>$patientInfo['patientSuffix'],
@@ -354,7 +351,7 @@ function getReferralFhud($hfhudcode)
             $type =  $model->type($fhudcode)->facility_type;
             if($type == '4' || $type == '1'){
                 $code  ='HOSP-';
-                $code .=  $this->Model->maxID()+1;
+                $code .= $model->maxID()+1;
                 $code .= date('mdyhis');
                 $code .= generateRandomString();
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
