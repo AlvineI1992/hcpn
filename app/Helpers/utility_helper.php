@@ -1,6 +1,54 @@
 <?php
 
 
+if ( !function_exists('receive') ) {
+    function receive($transmitData) 
+    { 
+        try 
+        {
+            $model = new \App\Models\ReferralModel;
+            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+            $data= json_decode($input,true);
+            if(empty($data['LogID'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Reference is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['receivedDate'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received date is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['receivedPerson'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received date is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            $param  =array(
+            'LogID'=>$data['LogID'],
+            'receivedDate'=>$data['receivedDate'],
+            'receivedPerson'=>$data['receivedPerson']);
+            $model->insertTrack($param);
+            $response=array(
+                'code'=>'200',
+                'response'=>'Patient Received',
+                'date'=>date('m/d/Y H:i:s'));
+                return json_encode($response);
+        } 
+        catch (SoapFault $exception) 
+        {
+                return json_encode($exception);
+        } 
+
+    }
+}
+
 if ( !function_exists('wsCheck') ) {
     function wsCheck() 
     { 
@@ -182,8 +230,8 @@ if ( !function_exists('online') ) {
                     'refer'=>$provRefer,
                     'consu'=>$provConsu,
                 );
+               
                  $trans = $model->referralTransaction($param);
-                 return json_encode($trans);
                if($trans['code'] == '200'){ 
                     $response=array(
                        'LogID'=>$LogID,
@@ -312,7 +360,7 @@ function getReferralFhud($hfhudcode)
 				'rprhreferral'=>$patientInfo['referral'],
 				'rprhreferralmethod'=>$patientInfo['rprhreferralmethod'],
 				'status'=>$patientInfo['status'],
-				'referringProviderContactNumber'=>$patientInfo['referringContactNumber'],
+				'referringContactNumber'=>$patientInfo['referringProviderContactNumber'],
 				'referralDate'=>$patientInfo['refferalDate'],
 				'referralTime'=>$patientInfo['refferalTime'],
 				'referralCategory'=>$patientInfo['referralCategory'],

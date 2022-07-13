@@ -49,12 +49,20 @@ class ReferralWSController extends BaseController
 					'rpc',
 					'encoded',
 					'Webservice');
-	
 		$server->register('online',             
 			array('data' => "xsd:string"), 
 			array("return"=>"xsd:string"),
 					$ep,
 					$ep.'#online',
+					'rpc',
+					'encoded',
+					'Webservice');
+
+		$server->register('receive',             
+			array('data' => "xsd:string"), 
+			array("return"=>"xsd:string"),
+					$ep,
+					$ep.'#receive',
 					'rpc',
 					'encoded',
 					'Webservice');
