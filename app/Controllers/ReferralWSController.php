@@ -12,7 +12,7 @@ class ReferralWSController extends BaseController
 
 
 		$this->Model = new ReferralModel();
-		$ep= base_url()."/Referral_ws/wsdl";
+		$ep= "/Referral_ws/wsdl";
 		$server =$this->server = new \nusoap_server();
 		$this->server->configureWSDL('homis',$ep,$ep);
 		$this->server->wsdl->schemaTargetNamespace = $ep;  
