@@ -56,7 +56,7 @@ if ( !function_exists('online') ) {
                     'date'=>date('m/d/Y H:i:s'));
                     return json_encode($response);
              }
-            $LogID=generateReferCode($data['caseNumber'],$data['fhudFrom']);
+            $LogID=generateReferCode($data['fhudFrom']);
             $check=$model->existLog($LogID)->count;
             if($check == 0){
                 $referInfo=array('LogID'=>$LogID,
@@ -72,7 +72,7 @@ if ( !function_exists('online') ) {
                'rprhreferral'=>$data['rprhreferral'],
                'rprhreferralmethod'=>$data['rprhreferralmethod'],
                'status'=>$data['status'],
-               'refferalDate'=> $data['referralTime'],
+               'refferalDate'=> $data['referralDate'],
                'refferalTime'=>$data['referralTime'],
                'referralCategory'=>$data['referralCategory'],
                'logDate'=>date('Y/m/d H:i:s'));
@@ -343,30 +343,42 @@ function getReferralFhud($hfhudcode)
 				'vitalSign'=>stripslashes($clinicalInfo->vitalSign), 
 				'patientProvider'=>$providerID);
 			} 
-		return json_encode($response);
+		 return json_encode($response);
     }
 }
 
     if ( !function_exists('generateReferCode') ) {
-        function generateReferCode($casenum,$fhudcode)
+        function generateReferCode($fhudcode)
         {
             $model = new \App\Models\ReferralModel;
             $type =  $model->type($fhudcode)->facility_type;
             if($type == '4' || $type == '1'){
-                $code  ='HOSP';
-                $code .= $casenum;
-                $code .=  $model->maxID()+1;
+                $code  ='HOSP-';
+                $code .=  $this->Model->maxID()+1;
                 $code .= date('mdyhis');
+                $code .= generateRandomString();
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
             }else if($type == '17'){
-                $code  ='RHU';
-                $code .= $casenum;
+                $code  ='RHU-';
                 $code .= $model->maxID()+1;
+                $code .= date('mdyhis');
+                $code .= generateRandomString();
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
             }else{
                 return  0;
             }
         }
+    }
+    if ( !function_exists('generateRandomString') ) {
+    function generateRandomString($length = 5) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$charactersLength = strlen($characters);
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, $charactersLength - 1)];
+		}
+		return $randomString;
+	}   
     }
         
    
