@@ -38,7 +38,7 @@ $routes->set404Override();
 
 $routes->get('Referral_ws/wsdl', 'ReferralWsController::index');
 $routes->post('Referral_ws/wsdl', 'ReferralWsController::index');
-$routes->get('Referral_ws/test', 'ReferralWsController::test');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

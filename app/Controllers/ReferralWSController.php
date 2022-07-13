@@ -12,7 +12,7 @@ class ReferralWSController extends BaseController
 
 
 		$this->Model = new ReferralModel();
-		$ep= base_url()."/public/Referral_ws/wsdl";
+		$ep= base_url()."/Referral_ws/wsdl";
 		$server =$this->server = new \nusoap_server();
 		$this->server->configureWSDL('homis',$ep,$ep);
 		$this->server->wsdl->schemaTargetNamespace = $ep;  
@@ -71,34 +71,6 @@ class ReferralWSController extends BaseController
 		$this->server->service(file_get_contents("php://input"));
     }
 
-	public  function test()
-	{
-		//$data = $this->Model->getPatientInfo('HOSP2016-0030082071222105309','DOH000000000005937');
-		//$data = $this->Model->getClinicalInfo('HOSP2016-0030082071222105309');
-		//$data = $this->Model->getReferProvider('HOSP2016-0030082071222105309');
-		//$data = $this->Model->getReferralfhud('DOH000000000005937');
-		//echo json_encode($data);
-
-		//$this->Model = new \App\Models\ReferralModel;
-            $type =  $this->Model->type('DOH000000000005937')->facility_type;
-            if($type == '4' || $type == '1'){
-                $code  ='HOSP-';
-                $code .=  $this->Model->maxID()+1;
-				$code .= date('mdyhis');
-                $code .= generateRandomString();
-                echo  $code =str_pad($code,6,0, STR_PAD_LEFT);
-            }else if($type == '17'){
-                $code  ='RHU-';
-                $code .=$this->Model->maxID()+1;
-				$code .= date('mdyhis');
-				$code .= generateRandomString();
-                echo  $code =str_pad($code,6,0, STR_PAD_LEFT);
-            }else{
-                return  0;
-            }
-
-	}
-	//WEBSERVICE
 
 	
 

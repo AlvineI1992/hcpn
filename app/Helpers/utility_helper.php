@@ -57,7 +57,9 @@ if ( !function_exists('online') ) {
                     return json_encode($response);
              }
             $LogID=generateReferCode($data['fhudFrom']);
+          
             $check=$model->existLog($LogID)->count;
+    
             if($check == 0){
                 $referInfo=array('LogID'=>$LogID,
                'fhudFrom'=>$data['fhudFrom'], 
@@ -180,7 +182,7 @@ if ( !function_exists('online') ) {
                     'refer'=>$provRefer,
                     'consu'=>$provConsu,
                 );
-                     $trans = $model->referralTransaction($param);
+                 $trans = $model->referralTransaction($param);
                if($trans['code'] == '200'){ 
                     $response=array(
                        'LogID'=>$LogID,
@@ -353,29 +355,29 @@ function getReferralFhud($hfhudcode)
                 $code  ='HOSP-';
                 $code .= $model->maxID()+1;
                 $code .= date('mdyhis');
-                $code .= generateRandomString();
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
             }else if($type == '17'){
                 $code  ='RHU-';
                 $code .= $model->maxID()+1;
                 $code .= date('mdyhis');
-                $code .= generateRandomString();
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
             }else{
                 return  0;
             }
         }
     }
+
+    
     if ( !function_exists('generateRandomString') ) {
-    function generateRandomString($length = 5) {
-		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$charactersLength = strlen($characters);
-		$randomString = '';
-		for ($i = 0; $i < $length; $i++) {
-			$randomString .= $characters[rand(0, $charactersLength - 1)];
-		}
-		return $randomString;
-	}   
+        function generateRandomString($length = 5) {
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $charactersLength = strlen($characters);
+            $randomString = '';
+            for ($i = 0; $i < $length; $i++) {
+                $randomString .= $characters[rand(0, $charactersLength - 1)];
+            }
+            return $randomString;
+        }   
     }
         
    
