@@ -103,10 +103,8 @@ class ReferralWSController extends BaseController
 		'rpc',
 		'encoded',
 		'Webservice');
-						
-	
-	
 	}
+
     function index()  
 	{
 		if($this->request->uri->getSegment(2)== "wsdl") {
@@ -117,43 +115,5 @@ class ReferralWSController extends BaseController
 		$this->response->setHeader('Content-Type', 'text/xml');
 		$this->server->service(file_get_contents("php://input"));
     }
-
-	function test()
-	{
-		$param  =array(
-			'LogID'=>'',
-			'date'=>'',
-			'disposition'=>'',
-			'condition'=>'',
-			'remarks'=>'',
-			'hasFollowup'=>'',
-			'hasMedicine'=>'',
-			'drugs'=>stripslashes(json_encode(array(
-				'LogID'=>$data['LogID'],
-				'drugcode'=>$data['drugcode'],
-				'generic'=>$data['generic'],
-				'instruction'=>$data['instruction'],
-				'EDPMSID'=>$data['EDPMSID']))),
-			'schedule'=>json_encode(array(
-			'LogID'=>$data['LogID'],
-			'date'=>$data['date']
-			
-			))
-			
-			
-			
-			);
-        echo json_encode($param);
-
-
-		$drugs  =array(
-			'LogID'=>$data['LogID'],
-			'drugcode'=>$data['drugcode'],
-			'generic'=>$data['generic'],
-			'instruction'=>$data['instruction'],
-			'EDPMSID'=>$data['EDPMSID']);
-	}
-
-	
 
 }

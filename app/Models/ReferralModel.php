@@ -16,7 +16,7 @@ class ReferralModel extends Model
     protected $track = 'referral_track';
     protected $med = 'referral_medicine';
 	protected $followup = 'referral_followup';
-	protected $meds = 'referral_followup';
+	protected $meds = 'referral_medicine';
 	
 	function existLog($value)
 	{
@@ -116,15 +116,15 @@ class ReferralModel extends Model
 			if(!$insDisch) throw new Exception($this->db->_error_message(), $this->db->_error_number());
 				if($param['discharge']['hasFollowUp']=='Y')
 				{
-						$insertFollowup = $this->db->table($this->patient);
-						$insertFollowup->insertBatch($param['followup']);
+						$insertFollowup = $this->db->table($this->followup);
+						$insertFollowup->insert($param['followup']);
 						if(!$insertFollowup) throw new Exception($this->db->_error_message(), $this->db->_error_number());
 				}
 				if($param['discharge']['hasMedicine']=='Y')
 				{
-						$inserMedicine = $this->db->table($this->patient);
-						$inserMedicine->insertBatch($param['medicine']);
-						if(!$inserMedicine) throw new Exception($this->db->_error_message(), $this->db->_error_number());
+						$insertMedicine = $this->db->table($this->meds);
+						$insertMedicine->insertBatch($param['medicine']);
+						if(!$insertMedicine) throw new Exception($this->db->_error_message(), $this->db->_error_number());
 				}
 			if ($this->db->transStatus() === false) {
 				$this->db->transRollback();

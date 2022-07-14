@@ -30,16 +30,16 @@ if ( !function_exists('receive') ) {
                     return json_encode($response);
             }
             $param  =array(
-                'LogID'=>$data['LogID'],
-                'receivedDate'=>$data['receivedDate'],
-                'receivedPerson'=>$data['receivedPerson']);
+                    'LogID'=>$data['LogID'],
+                    'receivedDate'=>date("Y-m-d H:i:s",strtotime($data['receivedDate'])),
+                    'receivedPerson'=>$data['receivedPerson']);
             $model->insertTrack($param);
             $response=array(
-                'LogID'=>$data['LogID'],
-                'code'=>'200',
-                'response'=>'Patient received',
-                'date'=>date('m/d/Y H:i:s'));
-                return json_encode($response);
+                    'LogID'=>$data['LogID'],
+                    'code'=>'200',
+                    'response'=>'Patient received',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
         } 
         catch (SoapFault $exception) 
         {
@@ -81,13 +81,13 @@ if ( !function_exists('admit') ) {
             }
             $param  =array(
                 'LogID'=>$data['LogID'],
-                'admDate'=>$data['date'],
+                'admDate'=>date("Y-m-d H:i:s",strtotime($data['date'])),
                 'admDisp'=>$data['disp']);
             $model->admiPatient($data['LogID'],$param);
             $response=array(
                 'LogID'=>$data['LogID'],
                 'code'=>'200',
-                'response'=>'Patient received',
+                'response'=>'Patient is now admitted',
                 'date'=>date('m/d/Y H:i:s'));
                 return json_encode($response);
         } 
@@ -114,10 +114,18 @@ if ( !function_exists('discharge') ) {
                     'date'=>date('m/d/Y H:i:s'));
                     return json_encode($response);
             }
-            if(empty($data['date'])){
+            if(empty($data['admDate'])){
                 $response=array(
                     'code'=>'403',
-                    'response'=>'Received date is Invalid or null',
+                    'response'=>'Admission date is required!',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+
+            if(empty($data['dischDate'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Discharge date is required',
                     'date'=>date('m/d/Y H:i:s'));
                     return json_encode($response);
             }
@@ -136,7 +144,7 @@ if ( !function_exists('discharge') ) {
                     return json_encode($response);
             }
 
-            if(empty($data['hasFollowup'])){
+            if(empty($data['hasFollowUp'])){
                 $response=array(
                     'code'=>'403',
                     'response'=>'Follow Up status is required!',
@@ -156,33 +164,27 @@ if ( !function_exists('discharge') ) {
 
             $discharge  =array(
                 'LogID'=>$data['LogID'],
-                'dischDate'=>$data['date'],
+                'admDate'=>date("Y-m-d H:i:s",strtotime($data['admDate'])),
+                'dischDate'=>date("Y-m-d H:i:s",strtotime($data['dischDate'])),
                 'dischDisp'=>$data['disposition'],
                 'dischCond'=>$data['condition'],
                 'trackRemarks'=>$data['remarks'],
-                'hasFollowup'=>$data['hasfollowUp'],
+                'hasFollowUp'=>$data['hasFollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);
-
-            $sched  =array(
-                'LogID'=>$data['schedule']['LogID'],
-                'scheduleDateTime'=>$data['schedule']['date']);
-
-            $drugs  =array(
-                'LogID'=>$data['drugs']['LogID'],
-                'drugcode'=>$data['drugs']['drugcode'],
-                'generic'=>$data['drugs']['generic'],
-                'instruction'=>$data['drugs']['instruction'],
-                'EDPMSID'=>$data['drugs']['EDPMSID']);
+            $folUp= array(
+            'LogID'=>$data['schedule']['LogID'],
+            'scheduleDateTime'=>date("Y-m-d H:i:s",strtotime($data['schedule']['date'])),
+            );
 
             $param = array(
                 'LogID'=>$data['LogID'],
                 'discharge'=>$discharge,
-                'medicine'=>$drugs,
-                'followup'=>$sched);
-            $trans=$model->dischargeTransaction($param);
+                'medicine'=> $data['drugs'],
+                'followup'=> $folUp);
+             $trans=$model->dischargeTransaction($param);
             if($trans['code'] == '200'){ 
                 $response=array(
-                   'LogID'=>$LogID,
+                   'LogID'=>$data['LogID'],
                    'code'=>$trans['code'],
                    'message'=>$trans['message'],
                    'date'=>date('m/d/Y H:i:s'));
@@ -193,7 +195,7 @@ if ( !function_exists('discharge') ) {
                         'message'=>$trans['message'],
                         'date'=>date('m/d/Y H:i:s'));
                         return  json_encode($response);
-                }
+                } 
         } 
         catch (SoapFault $exception) 
         {
@@ -344,7 +346,6 @@ if ( !function_exists('online') ) {
                 'provider_middle'=>$data['patientProvider'][0]['ProviderMiddle'],
                 'provider_suffix'=>$data['patientProvider'][0]['ProviderSuffix'],
                 'provider_contact'=>$data['patientProvider'][0]['ProviderContactNo'],
-                'provider_dateadd'=> date('m/d/Y H:i:s'),
                 'provider_type'=>$data['patientProvider'][0]['ProviderType']);
 
                 $provRefer=array(
@@ -354,7 +355,6 @@ if ( !function_exists('online') ) {
                     'provider_middle'=>$data['patientProvider'][1]['ProviderMiddle'],
                     'provider_suffix'=>$data['patientProvider'][1]['ProviderSuffix'],
                     'provider_contact'=>$data['patientProvider'][1]['ProviderContactNo'],
-                    'provider_dateadd'=> date('m/d/Y H:i:s'),
                     'provider_type'=>$data['patientProvider'][1]['ProviderType']);
               
                
