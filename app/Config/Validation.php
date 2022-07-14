@@ -20,13 +20,7 @@ class Validation extends BaseConfig
      *
      * @var string[]
      */
-    public $ruleSets = [
-        Rules::class,
-        FormatRules::class,
-        FileRules::class,
-        CreditCardRules::class,
-    ];
-
+  
     /**
      * Specifies the views that are used to display the
      * errors.
@@ -36,6 +30,14 @@ class Validation extends BaseConfig
     public $templates = [
         'list'   => 'CodeIgniter\Validation\Views\list',
         'single' => 'CodeIgniter\Validation\Views\single',
+    ];
+
+    public $ruleSets = [
+        Rules::class,
+        FormatRules::class,
+        FileRules::class,
+        CreditCardRules::class,
+        \Myth\Auth\Authentication\Passwords\ValidationRules::class,
     ];
 
     //--------------------------------------------------------------------

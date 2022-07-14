@@ -43,7 +43,7 @@ class Autoload extends AutoloadConfig
     public $psr4 = [
         APP_NAMESPACE => APPPATH, // For custom app namespace
         'Config'      => APPPATH . 'Config',
-        'IonAuth' => ROOTPATH . 'ion_auth'
+        'Myth\Auth'   => APPPATH . 'ThirdParty/myth-auth/src'
     ];
    
 

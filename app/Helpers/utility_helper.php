@@ -1,54 +1,6 @@
 <?php
 
 if ( !function_exists('receive') ) {
-    function admit($transmitData) 
-    { 
-        try 
-        {
-            $model = new \App\Models\ReferralModel;
-            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
-            $data= json_decode($input,true);
-            if(empty($data['LogID'])){
-                $response=array(
-                    'code'=>'403',
-                    'response'=>'Reference is Invalid or null',
-                    'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }
-            if(empty($data['receivedDate'])){
-                $response=array(
-                    'code'=>'403',
-                    'response'=>'Received date is Invalid or null',
-                    'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }
-            if(empty($data['receivedPerson'])){
-                $response=array(
-                    'code'=>'403',
-                    'response'=>'Received date is Invalid or null',
-                    'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }
-            $param  =array(
-            'LogID'=>$data['LogID'],
-            'receivedDate'=>$data['receivedDate'].date("h:i:s"),
-            'receivedPerson'=>$data['receivedPerson']);
-            $model->insertTrack($param);
-            $response=array(
-                'code'=>'200',
-                'response'=>'Patient Received',
-                'date'=>date('m/d/Y H:i:s'));
-                return json_encode($response);
-        } 
-        catch (SoapFault $exception) 
-        {
-                return json_encode($exception);
-        } 
-
-    }
-}
-
-if ( !function_exists('receive') ) {
     function receive($transmitData) 
     { 
         try 
@@ -78,9 +30,9 @@ if ( !function_exists('receive') ) {
                     return json_encode($response);
             }
             $param  =array(
-            'LogID'=>$data['LogID'],
-            'receivedDate'=>$data['receivedDate'],
-            'receivedPerson'=>$data['receivedPerson']);
+                'LogID'=>$data['LogID'],
+                'receivedDate'=>$data['receivedDate'],
+                'receivedPerson'=>$data['receivedPerson']);
             $model->insertTrack($param);
             $response=array(
                 'LogID'=>$data['LogID'],
@@ -95,6 +47,181 @@ if ( !function_exists('receive') ) {
         } 
 
     }
+}
+
+
+if ( !function_exists('admit') ) {
+    function admit($transmitData) 
+    { 
+        try 
+        {
+            $model = new \App\Models\ReferralModel;
+            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+            $data= json_decode($input,true);
+            if(empty($data['LogID'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Reference ID is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['date'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received date is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['disp'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received person is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            $param  =array(
+                'LogID'=>$data['LogID'],
+                'admDate'=>$data['date'],
+                'admDisp'=>$data['disp']);
+            $model->admiPatient($data['LogID'],$param);
+            $response=array(
+                'LogID'=>$data['LogID'],
+                'code'=>'200',
+                'response'=>'Patient received',
+                'date'=>date('m/d/Y H:i:s'));
+                return json_encode($response);
+        } 
+        catch (SoapFault $exception) 
+        {
+                return json_encode($exception);
+        } 
+
+    }
+}
+
+if ( !function_exists('discharge') ) {
+    function discharge($transmitData) 
+    { 
+        try 
+        {
+            $model = new \App\Models\ReferralModel;
+            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+            $data= json_decode($input,true);
+            if(empty($data['LogID'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Reference ID is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['date'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received date is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['disposition'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Disposition is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['condition'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Condition is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+
+            if(empty($data['hasFollowup'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Follow Up status is required!',
+                    'data'=>'Y if Yes & N for No',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+
+            if(empty($data['hasMedicine'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Medicine status is required!',
+                    'data'=>'Y if Yes & N for No',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+
+            $param  =array(
+                'LogID'=>$data['LogID'],
+                'dischDate'=>$data['date'],
+                'dischDisp'=>$data['disposition'],
+                'dischCond'=>$data['condition'],
+                'trackRemarks'=>$data['remarks'],
+                'hasFollowup'=>$data['hasfollowUp'],
+                'hasMedicine'=>$data['hasMedicine']);
+
+            if($data['hasfollowUp'] =='N' && $data['hasMedicine'] =='N'){
+                $model->dischargePatient($data['LogID'],$param);
+                    $response=array(
+                        'LogID'=>$data['LogID'],
+                        'code'=>'200',
+                        'response'=>'Patient status updated!',
+                        'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }else if($data['hasfollowUp'] =='Y'){
+                    $response=array(
+                        'LogID'=>$data['LogID'],
+                        'code'=>'403',
+                        'response'=>'Fill up follow up data first!',
+                        'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }else if($data['hasMedicine'] =='Y'){
+                     $response=array(
+                        'LogID'=>$data['LogID'],
+                        'code'=>'403',
+                        'response'=>'Fill up medicine data first!',
+                        'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }else{
+
+
+
+            }
+        } 
+        catch (SoapFault $exception) 
+        {
+                return json_encode($exception);
+        } 
+
+    }
+}
+
+if ( !function_exists('followup') ) {
+    function followup($transmitData) 
+    { 
+        $param  =array(
+            'LogID'=>$data['LogID'],
+            'scheduleDateTime'=>$data['date']);
+        $model->insertFollowUp($param);
+    }
+}
+
+if ( !function_exists('medicine') ) {
+    function medicine($transmitData) 
+    { 
+        $param  =array(
+            'LogID'=>$data['LogID'],
+            'intake'=>$data['intake'],
+            'uom'=>$data['uom'],
+            'form'=>$data['form'],
+            'time'=>$data['time'],
+            'every'=>$data['every'],
+            'start'=>$data['start']);
+        $model->insertMedicine($param);
+ }
 }
 
 if ( !function_exists('wsCheck') ) {

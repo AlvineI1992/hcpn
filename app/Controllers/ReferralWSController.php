@@ -59,22 +59,51 @@ class ReferralWSController extends BaseController
 					'Webservice');
 
 		$server->register('receive',             
-			array('data' => "xsd:string"), 
-			array("return"=>"xsd:string"),
-					$ep,
-					$ep.'#receive',
-					'rpc',
-					'encoded',
-					'Webservice');
+		array('data' => "xsd:string"), 
+		array("return"=>"xsd:string"),
+		$ep,
+		$ep.'#receive',
+		'rpc',
+		'encoded',
+		'Webservice');
 
 		$server->register('admit',             
-			array('data' => "xsd:string"), 
-			array("return"=>"xsd:string"),
-					$ep,
-					$ep.'#admit',
-					'rpc',
-					'encoded',
-					'Webservice');
+		array('data' => "xsd:string"), 
+		array("return"=>"xsd:string"),
+		$ep,
+		$ep.'#admit',
+		'rpc',
+		'encoded',
+		'Webservice');
+					
+		$server->register('discharge',             
+		array('data' => "xsd:string"), 
+		array("return"=>"xsd:string"),
+		$ep,
+		$ep.'#discharge',
+		'rpc',
+		'encoded',
+		'Webservice');
+		
+
+		$server->register('medicine',             
+		array('data' => "xsd:string"), 
+		array("return"=>"xsd:string"),
+		$ep,
+		$ep.'#medicine',
+		'rpc',
+		'encoded',
+		'Webservice');
+
+		$server->register('followup',             
+		array('data' => "xsd:string"), 
+		array("return"=>"xsd:string"),
+		$ep,
+		$ep.'#followup',
+		'rpc',
+		'encoded',
+		'Webservice');
+						
 	
 	
 	}
@@ -91,8 +120,15 @@ class ReferralWSController extends BaseController
 
 	function test()
 	{
-		 $data =  '02/02/2021'.date('H:i:s');
-		echo online('13');
+		$param  =array(
+			'LogID'=>'',
+			'date'=>'',
+			'disposition'=>'',
+			'condition'=>'',
+			'remarks'=>'',
+			'hasFollowup'=>'',
+			'hasMedicine'=>'');
+        echo json_encode($param);
 	}
 
 	

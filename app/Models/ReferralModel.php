@@ -15,6 +15,8 @@ class ReferralModel extends Model
     protected $return = 'referral_return';
     protected $track = 'referral_track';
     protected $med = 'referral_medicine';
+	protected $followup = 'referral_followup';
+	protected $meds = 'referral_followup';
 	
 	function existLog($value)
 	{
@@ -245,13 +247,38 @@ class ReferralModel extends Model
 		return $sql->insert($data);
 	}
 
-	public function admitPatient($id,$date)
+	public function admiPatient($id,$param)
 	{
 		$sql = $this->db->table($this->track);
-		$sql->set('admDate',$date, false);
+		$sql->set('admDate',$param['date'], false);
+		$sql->set('admDisp',$param['disp'], false);
 		$sql->where('LogID', $id);
 		return $sql->update();
 	}
+
+	public function dischargePatient($id,$date)
+	{
+		$sql = $this->db->table($this->track);
+		$sql->set('dischDate',$param['date'], false);
+		$sql->set('dischDisp',$param['date'], false);
+		$sql->set('dischCond',$param['disp'], false);
+		$sql->where('LogID', $id);
+		return $sql->update();
+	}
+
+	public function insertFollowUp($data)
+	{
+		$sql = $this->db->table($this->followup);
+		return $sql->insert($data);
+	}
+
+	public function insertMedicine($data)
+	{
+		$sql = $this->db->table($this->meds);
+		return $sql->insert($data);
+	}
+	
+	
 	
 
 	//OLD  CODES
