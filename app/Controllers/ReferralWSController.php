@@ -66,6 +66,16 @@ class ReferralWSController extends BaseController
 					'rpc',
 					'encoded',
 					'Webservice');
+
+		$server->register('admit',             
+			array('data' => "xsd:string"), 
+			array("return"=>"xsd:string"),
+					$ep,
+					$ep.'#admit',
+					'rpc',
+					'encoded',
+					'Webservice');
+	
 	
 	}
     function index()  
@@ -79,6 +89,11 @@ class ReferralWSController extends BaseController
 		$this->server->service(file_get_contents("php://input"));
     }
 
+	function test()
+	{
+		 $data =  '02/02/2021'.date('H:i:s');
+		echo online('13');
+	}
 
 	
 

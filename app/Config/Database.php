@@ -32,10 +32,10 @@ class Database extends Config
      */
     public $default = [
         'DSN'      => '',
-        'hostname' =>  'localhost',
-        'username' =>  'root',
+        'hostname' =>  '',
+        'username' =>  '',
         'password' => '',
-        'database' =>  'ihomis_latest',
+        'database' =>  '',
         'DBDriver' =>  'MySQLi',
         'DBPrefix' =>  '',
         'pConnect' => false,
@@ -58,7 +58,7 @@ class Database extends Config
      */
     public $tests = [
         'DSN'         => '',
-        'hostname'    => '127.0.0.1',
+        'hostname'    => '',
         'username'    => '',
         'password'    => '',
         'database'    => ':memory:',

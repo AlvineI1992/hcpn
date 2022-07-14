@@ -238,11 +238,19 @@ class ReferralModel extends Model
 		$sql->where('referral_information.fhudTo' ,$fhudcode);	
 		return $sql->get()->getResultArray();
 	}
-	
+
 	public function insertTrack($data)
 	{
 		$sql = $this->db->table($this->track);
 		return $sql->insert($data);
+	}
+
+	public function admitPatient($id,$date)
+	{
+		$sql = $this->db->table($this->track);
+		$sql->set('admDate',$date, false);
+		$sql->where('LogID', $id);
+		return $sql->update();
 	}
 	
 

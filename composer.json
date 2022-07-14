@@ -9,7 +9,8 @@
         "codeigniter4/framework": "^4.0",
         "vlucas/phpdotenv": "^5.4",
         "econea/nusoap": "^0.9.12",
-        "fortawesome/font-awesome": "^6.1"
+        "fortawesome/font-awesome": "^6.1",
+        "agungsugiarto/boilerplate": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

@@ -1,8 +1,7 @@
 <?php
 
-
 if ( !function_exists('receive') ) {
-    function receive($transmitData) 
+    function admit($transmitData) 
     { 
         try 
         {
@@ -32,12 +31,61 @@ if ( !function_exists('receive') ) {
             }
             $param  =array(
             'LogID'=>$data['LogID'],
-            'receivedDate'=>$data['receivedDate'],
+            'receivedDate'=>$data['receivedDate'].date("h:i:s"),
             'receivedPerson'=>$data['receivedPerson']);
             $model->insertTrack($param);
             $response=array(
                 'code'=>'200',
                 'response'=>'Patient Received',
+                'date'=>date('m/d/Y H:i:s'));
+                return json_encode($response);
+        } 
+        catch (SoapFault $exception) 
+        {
+                return json_encode($exception);
+        } 
+
+    }
+}
+
+if ( !function_exists('receive') ) {
+    function receive($transmitData) 
+    { 
+        try 
+        {
+            $model = new \App\Models\ReferralModel;
+            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+            $data= json_decode($input,true);
+            if(empty($data['LogID'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Reference ID is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['receivedDate'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received date is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            if(empty($data['receivedPerson'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Received person is Invalid or null',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+            $param  =array(
+            'LogID'=>$data['LogID'],
+            'receivedDate'=>$data['receivedDate'],
+            'receivedPerson'=>$data['receivedPerson']);
+            $model->insertTrack($param);
+            $response=array(
+                'LogID'=>$data['LogID'],
+                'code'=>'200',
+                'response'=>'Patient received',
                 'date'=>date('m/d/Y H:i:s'));
                 return json_encode($response);
         } 
