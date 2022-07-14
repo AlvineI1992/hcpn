@@ -106,6 +106,49 @@ class ReferralModel extends Model
 		}
 	}
 	
+	public  function dischargeTransaction($param)
+	{
+		try {
+			$this->db->transBegin();
+				$insDisch = $this->db->table($this->track);
+				$insDisch->where('LogID', $param['LogID']);
+				$insDisch->update($param['discharge']);
+			if(!$insDisch) throw new Exception($this->db->_error_message(), $this->db->_error_number());
+				if($param['discharge']['hasFollowUp']=='Y')
+				{
+						$insertFollowup = $this->db->table($this->patient);
+						$insertFollowup->insertBatch($param['followup']);
+						if(!$insertFollowup) throw new Exception($this->db->_error_message(), $this->db->_error_number());
+				}
+				if($param['discharge']['hasMedicine']=='Y')
+				{
+						$inserMedicine = $this->db->table($this->patient);
+						$inserMedicine->insertBatch($param['medicine']);
+						if(!$inserMedicine) throw new Exception($this->db->_error_message(), $this->db->_error_number());
+				}
+			if ($this->db->transStatus() === false) {
+				$this->db->transRollback();
+				return $response=array(
+					'code'=>'500',
+					'message'=>'Failed!');
+			} else {
+				$this->db->transCommit();
+				return $response=array(
+					'code'=>'200',
+					'message'=>'Success!');
+			}	
+		}catch (\Exception $e) {
+			$this->db->transRollback();
+			 
+			  return $response=array(
+					'code'=>$e->getCode(),
+					'message'=>$e->getMessage());
+			log_message('error', sprintf('%s : %s : DB transaction failed. Error no: %s, Error msg:%s, Last query: %s', __CLASS__, __FUNCTION__, $e->getCode(), $e->getMessage(), print_r($this->main_db->last_query(), TRUE)));
+		}
+
+	}
+
+	
 
 	public function insertLog($data)
 	{
@@ -256,14 +299,11 @@ class ReferralModel extends Model
 		return $sql->update();
 	}
 
-	public function dischargePatient($id,$date)
+	public function dischargePatient($id,$param)
 	{
 		$sql = $this->db->table($this->track);
-		$sql->set('dischDate',$param['date'], false);
-		$sql->set('dischDisp',$param['date'], false);
-		$sql->set('dischCond',$param['disp'], false);
 		$sql->where('LogID', $id);
-		return $sql->update();
+		return $sql->update($data);
 	}
 
 	public function insertFollowUp($data)

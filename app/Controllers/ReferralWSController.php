@@ -86,20 +86,20 @@ class ReferralWSController extends BaseController
 		'Webservice');
 		
 
-		$server->register('medicine',             
+		$server->register('getMedicine',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
 		$ep,
-		$ep.'#medicine',
+		$ep.'#getMedicine',
 		'rpc',
 		'encoded',
 		'Webservice');
 
-		$server->register('followup',             
+		$server->register('getFollowup',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
 		$ep,
-		$ep.'#followup',
+		$ep.'#getFollowup',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -127,8 +127,31 @@ class ReferralWSController extends BaseController
 			'condition'=>'',
 			'remarks'=>'',
 			'hasFollowup'=>'',
-			'hasMedicine'=>'');
+			'hasMedicine'=>'',
+			'drugs'=>stripslashes(json_encode(array(
+				'LogID'=>$data['LogID'],
+				'drugcode'=>$data['drugcode'],
+				'generic'=>$data['generic'],
+				'instruction'=>$data['instruction'],
+				'EDPMSID'=>$data['EDPMSID']))),
+			'schedule'=>json_encode(array(
+			'LogID'=>$data['LogID'],
+			'date'=>$data['date']
+			
+			))
+			
+			
+			
+			);
         echo json_encode($param);
+
+
+		$drugs  =array(
+			'LogID'=>$data['LogID'],
+			'drugcode'=>$data['drugcode'],
+			'generic'=>$data['generic'],
+			'instruction'=>$data['instruction'],
+			'EDPMSID'=>$data['EDPMSID']);
 	}
 
 	

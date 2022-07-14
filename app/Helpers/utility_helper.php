@@ -154,7 +154,7 @@ if ( !function_exists('discharge') ) {
                     return json_encode($response);
             }
 
-            $param  =array(
+            $discharge  =array(
                 'LogID'=>$data['LogID'],
                 'dischDate'=>$data['date'],
                 'dischDisp'=>$data['disposition'],
@@ -163,33 +163,37 @@ if ( !function_exists('discharge') ) {
                 'hasFollowup'=>$data['hasfollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);
 
-            if($data['hasfollowUp'] =='N' && $data['hasMedicine'] =='N'){
-                $model->dischargePatient($data['LogID'],$param);
+            $sched  =array(
+                'LogID'=>$data['schedule']['LogID'],
+                'scheduleDateTime'=>$data['schedule']['date']);
+
+            $drugs  =array(
+                'LogID'=>$data['drugs']['LogID'],
+                'drugcode'=>$data['drugs']['drugcode'],
+                'generic'=>$data['drugs']['generic'],
+                'instruction'=>$data['drugs']['instruction'],
+                'EDPMSID'=>$data['drugs']['EDPMSID']);
+
+            $param = array(
+                'LogID'=>$data['LogID'],
+                'discharge'=>$discharge,
+                'medicine'=>$drugs,
+                'followup'=>$sched);
+            $trans=$model->dischargeTransaction($param);
+            if($trans['code'] == '200'){ 
+                $response=array(
+                   'LogID'=>$LogID,
+                   'code'=>$trans['code'],
+                   'message'=>$trans['message'],
+                   'date'=>date('m/d/Y H:i:s'));
+                   return  json_encode($response);
+                }else{
                     $response=array(
-                        'LogID'=>$data['LogID'],
-                        'code'=>'200',
-                        'response'=>'Patient status updated!',
+                        'code'=>$trans['code'],
+                        'message'=>$trans['message'],
                         'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }else if($data['hasfollowUp'] =='Y'){
-                    $response=array(
-                        'LogID'=>$data['LogID'],
-                        'code'=>'403',
-                        'response'=>'Fill up follow up data first!',
-                        'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }else if($data['hasMedicine'] =='Y'){
-                     $response=array(
-                        'LogID'=>$data['LogID'],
-                        'code'=>'403',
-                        'response'=>'Fill up medicine data first!',
-                        'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-            }else{
-
-
-
-            }
+                        return  json_encode($response);
+                }
         } 
         catch (SoapFault $exception) 
         {
@@ -214,12 +218,10 @@ if ( !function_exists('medicine') ) {
     { 
         $param  =array(
             'LogID'=>$data['LogID'],
-            'intake'=>$data['intake'],
-            'uom'=>$data['uom'],
-            'form'=>$data['form'],
-            'time'=>$data['time'],
-            'every'=>$data['every'],
-            'start'=>$data['start']);
+            'drugcode'=>$data['intake'],
+            'generic'=>$data['uom'],
+            'instruction'=>$data['form'],
+            'EDPMSID'=>$data['time']);
         $model->insertMedicine($param);
  }
 }
