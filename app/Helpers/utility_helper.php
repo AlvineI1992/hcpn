@@ -100,7 +100,7 @@ if ( !function_exists('admit') ) {
 }
 
 if ( !function_exists('getDischargeData') ) {
-    function getDischargeData($param) {
+    function getDischargeData($transmitData) {
         $model = new \App\Models\ReferralModel;
         $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
         $data= json_decode($input,true);
