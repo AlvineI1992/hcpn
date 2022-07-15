@@ -60,7 +60,15 @@ class ReferralModel extends Model
         $sql->join($this->track, 'referral_information.LogID = referral_track.LogID','LEFT');
         return $query = $sql->get()->getResultArray();
      }
-	 
+
+	 public function getdischargeInformation($LogID)
+     {
+        $sql = $this->db->table($this->track);
+        $sql->select('*');
+        $sql->join($this->followup, 'referral_followup.LogID = referral_track.LogID','left');
+		$sql->join($this->meds, 'referral_medicine.LogID = referral_track.LogID','left');
+        return $query = $sql->get()->getResultArray();
+     }
 	
 	
 	public function referralTransaction($param)

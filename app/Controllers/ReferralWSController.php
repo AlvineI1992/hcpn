@@ -116,4 +116,9 @@ class ReferralWSController extends BaseController
 		$this->server->service(file_get_contents("php://input"));
     }
 
+	function test()
+	{
+		$this->Model('');
+	}
+
 }
