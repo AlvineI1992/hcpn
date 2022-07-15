@@ -85,24 +85,15 @@ class ReferralWSController extends BaseController
 		'encoded',
 		'Webservice');
 		
-
-		$server->register('getMedicine',             
+		$server->register('getDischargeData',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
 		$ep,
-		$ep.'#getMedicine',
+		$ep.'#getDischargeData',
 		'rpc',
 		'encoded',
 		'Webservice');
 
-		$server->register('getFollowup',             
-		array('data' => "xsd:string"), 
-		array("return"=>"xsd:string"),
-		$ep,
-		$ep.'#getFollowup',
-		'rpc',
-		'encoded',
-		'Webservice');
 	}
 
     function index()  
@@ -118,7 +109,8 @@ class ReferralWSController extends BaseController
 
 	function test()
 	{
-		$this->Model('');
+		$data = $this->Model->getdischargeInformation('HOSP-2071422083643');
+		echo json_encode($data);
 	}
 
 }

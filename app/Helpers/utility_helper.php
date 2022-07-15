@@ -162,12 +162,22 @@ if ( !function_exists('discharge') ) {
                     return json_encode($response);
             }
 
+            if(empty($data['diagnosis'])){
+                $response=array(
+                    'code'=>'403',
+                    'response'=>'Diagnosis is required!',
+                    'data'=>'text format only',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+            }
+
             $discharge  =array(
                 'LogID'=>$data['LogID'],
                 'admDate'=>date("Y-m-d H:i:s",strtotime($data['admDate'])),
                 'dischDate'=>date("Y-m-d H:i:s",strtotime($data['dischDate'])),
                 'dischDisp'=>$data['disposition'],
                 'dischCond'=>$data['condition'],
+                'diagnosis'=>$data['diagnosis'],
                 'trackRemarks'=>$data['remarks'],
                 'hasFollowUp'=>$data['hasFollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);
@@ -584,6 +594,21 @@ function getReferralFhud($hfhudcode)
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);
             }else if($type == '17'){
                 $code  ='RHU-';
+                $code .= $model->maxID()+1;
+                $code .= date('mdyhis');
+                return  $code =str_pad($code,6,0, STR_PAD_LEFT);
+            }else if($type == '15'){
+                $code  ='BiHo-';
+                $code .= $model->maxID()+1;
+                $code .= date('mdyhis');
+                return  $code =str_pad($code,6,0, STR_PAD_LEFT);
+            }else if($type == '19'){
+                $code  ='MHO-';
+                $code .= $model->maxID()+1;
+                $code .= date('mdyhis');
+                return  $code =str_pad($code,6,0, STR_PAD_LEFT);
+            }else if($type == '21'){
+                $code  ='PHO-';
                 $code .= $model->maxID()+1;
                 $code .= date('mdyhis');
                 return  $code =str_pad($code,6,0, STR_PAD_LEFT);

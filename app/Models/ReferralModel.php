@@ -63,11 +63,71 @@ class ReferralModel extends Model
 
 	 public function getdischargeInformation($LogID)
      {
-        $sql = $this->db->table($this->track);
-        $sql->select('*');
-        $sql->join($this->followup, 'referral_followup.LogID = referral_track.LogID','left');
-		$sql->join($this->meds, 'referral_medicine.LogID = referral_track.LogID','left');
-        return $query = $sql->get()->getResultArray();
+		$return;
+		try {
+			$this->db->transBegin();
+				$record = $this->db->table($this->track);
+				$record->select('referral_track.*');
+				$record->where('referral_track.LogID',$LogID);
+				$record->where('referral_track.dischDate is NOT NULL', NULL, FALSE);
+				$record->where('referral_track.admDate is NOT NULL', NULL, FALSE);
+			$record_count = $record->countAllResults();
+			$record_query = $record->get()->getRow();
+			if(!$record) throw new Exception($this->db->_error_message(), $this->db->_error_number());
+
+
+			if($record_count === 0){
+			
+				return  $this->response = "No record found!";
+			}else{
+				
+				$result_record= array(
+					'LogID' =>$record_query->LogID,
+					'admDateTime' => date('m/d/Y H:i:s',strtotime($record_query->admDate)),
+					'dischDateTime' => date('m/d/Y H:i:s',strtotime($record_query->dischDate)),
+					'diagnosis' => ($record_query->diagtext == null)? "Diagnosis not specified" :$record_query->diagtext,
+					'dischDisp' => $record_query->dischDisp,
+					'dischCond' => $record_query->dischCond,
+					'hasFollowUp' => $record_query->hasFollowUp,
+					'remarks' =>  ($record_query->trackRemarks == null)? "Diagnosis not specified" : $record_query->trackRemarks);
+			
+				if($record_query->hasFollowup === 'Y'){
+					$schedule = $this->db->table($this->followup);
+					$schedule->select('scheduleDateTime');
+					$schedule->where('LogID',$LogID);
+					$schedule_query = $schedule->get()->getRow();
+				}
+
+				if($record_query->hasMedicine === 'Y'){
+					$med = $this->db->table($this->meds);
+					$med->select('drugcode,generic,instruction');
+					$med->where('LogID',$LogID);
+					$med_query = $med->get()->getResultArray();
+				}
+
+				$this->return = array(
+					'dischargeData'=>$result_record,
+					'drugs'=>$med_query,
+					'schedule'=>$schedule_query);
+
+			}
+
+			if ($this->db->transStatus() === false) {
+				$this->db->transRollback();
+				return $response=array(
+					'code'=>'500',
+					'message'=>'Error on Database!');
+			} else {
+				$this->db->transCommit();
+				return  $this->return;
+			}	
+		}catch (\Exception $e) {
+			$this->db->transRollback();
+			return $response=array(
+				  'code'=>$e->getCode(),
+				  'message'=>$e->getMessage());
+		  log_message('error', sprintf('%s : %s : DB transaction failed. Error no: %s, Error msg:%s, Last query: %s', __CLASS__, __FUNCTION__, $e->getCode(), $e->getMessage(), print_r($this->main_db->last_query(), TRUE)));
+		}
      }
 	
 	
