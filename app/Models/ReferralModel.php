@@ -85,7 +85,7 @@ class ReferralModel extends Model
 					'LogID' =>$record_query->LogID,
 					'admDateTime' => date('m/d/Y H:i:s',strtotime($record_query->admDate)),
 					'dischDateTime' => date('m/d/Y H:i:s',strtotime($record_query->dischDate)),
-					'diagnosis' => ($record_query->diagtext == null)? "Diagnosis not specified" :$record_query->diagtext,
+					'diagnosis' => ($record_query->diagnosis == null)? "Diagnosis not specified" :$record_query->diagnosis,
 					'dischDisp' => $record_query->dischDisp,
 					'dischCond' => $record_query->dischCond,
 					'hasFollowUp' => $record_query->hasFollowUp,
