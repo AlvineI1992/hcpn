@@ -88,7 +88,7 @@ class ReferralModel extends Model
 					'diagnosis' => ($record_query->diagnosis == null)? "Diagnosis not specified" :$record_query->diagnosis,
 					'dischDisp' => $record_query->dischDisp,
 					'dischCond' => $record_query->dischCond,
-					'hasFollowUp' => $record_query->hasFollowUp,
+					'hasFollowUp' => $record_query->hasFollowup,
 					'remarks' =>  ($record_query->trackRemarks == null)? "Diagnosis not specified" : $record_query->trackRemarks);
 			
 				if($record_query->hasFollowup === 'Y'){

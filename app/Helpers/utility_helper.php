@@ -589,7 +589,7 @@ function getReferralFhud($hfhudcode)
 				'vitalSign'=>stripslashes($clinicalInfo->vitalSign), 
 				'patientProvider'=>$providerID);
 			} 
-		 return json_encode($response);
+		 return $response;
     }
 }
 
