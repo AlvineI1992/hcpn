@@ -190,12 +190,12 @@ if ( !function_exists('discharge') ) {
                 'dischCond'=>$data['condition'],
                 'diagnosis'=>$data['diagnosis'],
                 'trackRemarks'=>$data['remarks'],
+                'disnotes'=>$data['disnotes'],
                 'hasFollowUp'=>$data['hasFollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);
             $folUp= array(
             'LogID'=>$data['schedule']['LogID'],
-            'scheduleDateTime'=>date("Y-m-d H:i:s",strtotime($data['schedule']['date'])),
-            );
+            'scheduleDateTime'=>date("Y-m-d H:i:s",strtotime($data['schedule']['date'])));
 
             $param = array(
                 'LogID'=>$data['LogID'],
@@ -226,28 +226,6 @@ if ( !function_exists('discharge') ) {
     }
 }
 
-if ( !function_exists('followup') ) {
-    function followup($transmitData) 
-    { 
-        $param  =array(
-            'LogID'=>$data['LogID'],
-            'scheduleDateTime'=>$data['date']);
-        $model->insertFollowUp($param);
-    }
-}
-
-if ( !function_exists('medicine') ) {
-    function medicine($transmitData) 
-    { 
-        $param  =array(
-            'LogID'=>$data['LogID'],
-            'drugcode'=>$data['intake'],
-            'generic'=>$data['uom'],
-            'instruction'=>$data['form'],
-            'EDPMSID'=>$data['time']);
-        $model->insertMedicine($param);
- }
-}
 
 if ( !function_exists('wsCheck') ) {
     function wsCheck() 
@@ -315,6 +293,7 @@ if ( !function_exists('online') ) {
                'typeOfReferral'=>$data['typeOfReferral'],
                'referralReason'=>$data['referralReason'],
                'otherReasons'=>$data['otherReasons'],
+               'patientPan'=>$data['pan'],
                'remarks'=>$data['remarks'],
                'referralContactPerson'=>$data['referralContactPerson'],
                'referringProviderContactNumber'=>$data['referringContactNumber'],
@@ -426,8 +405,7 @@ if ( !function_exists('online') ) {
                     'demo'=>$patientDemo,
                     'clinic'=>$patientClinic,
                     'refer'=>$provRefer,
-                    'consu'=>$provConsu,
-                );
+                    'consu'=>$provConsu);
                
                  $trans = $model->referralTransaction($param);
                if($trans['code'] == '200'){ 

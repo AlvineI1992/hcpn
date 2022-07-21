@@ -63,7 +63,6 @@ class ReferralModel extends Model
 
 	 public function getdischargeInformation($LogID)
      {
-		$return;
 		try {
 			$this->db->transBegin();
 				$record = $this->db->table($this->track);
@@ -88,6 +87,7 @@ class ReferralModel extends Model
 					'diagnosis' => ($record_query->diagnosis == null)? "Diagnosis not specified" :$record_query->diagnosis,
 					'dischDisp' => $record_query->dischDisp,
 					'dischCond' => $record_query->dischCond,
+					'disnotes' => $record_query->disnotes,
 					'hasFollowUp' => $record_query->hasFollowup,
 					'remarks' =>  ($record_query->trackRemarks == null)? "Diagnosis not specified" : $record_query->trackRemarks);
 			
