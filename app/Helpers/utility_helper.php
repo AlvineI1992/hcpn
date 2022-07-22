@@ -192,7 +192,6 @@ if ( !function_exists('discharge') ) {
                 'dischCond'=>$data['condition'],
                 'diagnosis'=>$data['diagnosis'],
                 'trackRemarks'=>$data['remarks'],
-                'specialinstruct'=>$data['specialinstruct'],
                 'disnotes'=>$data['disnotes'],
                 'hasFollowUp'=>$data['hasFollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);

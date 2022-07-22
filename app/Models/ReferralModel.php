@@ -89,7 +89,8 @@ class ReferralModel extends Model
 					'dischCond' => $record_query->dischCond,
 					'disnotes' => $record_query->disnotes,
 					'hasFollowUp' => $record_query->hasFollowup,
-					'remarks' =>  ($record_query->trackRemarks == null)? "Diagnosis not specified" : $record_query->trackRemarks);
+					'hasMedicine' => $record_query->hasMedicine,
+					'remarks' =>  ($record_query->trackRemarks == null)? "" : $record_query->trackRemarks);
 			
 				if($record_query->hasFollowup === 'Y'){
 					$schedule = $this->db->table($this->followup);
