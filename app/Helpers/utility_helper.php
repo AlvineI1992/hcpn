@@ -182,6 +182,8 @@ if ( !function_exists('discharge') ) {
                     return json_encode($response);
             }
 
+            
+
             $discharge  =array(
                 'LogID'=>$data['LogID'],
                 'admDate'=>date("Y-m-d H:i:s",strtotime($data['admDate'])),
@@ -190,6 +192,7 @@ if ( !function_exists('discharge') ) {
                 'dischCond'=>$data['condition'],
                 'diagnosis'=>$data['diagnosis'],
                 'trackRemarks'=>$data['remarks'],
+                'specialinstruct'=>$data['specialinstruct'],
                 'disnotes'=>$data['disnotes'],
                 'hasFollowUp'=>$data['hasFollowUp'],
                 'hasMedicine'=>$data['hasMedicine']);
