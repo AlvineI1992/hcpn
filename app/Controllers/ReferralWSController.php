@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Controllers;
 use nusoap_client;
-
 use App\Controllers\BaseController;
 use App\Models\ReferralModel;
 
 class ReferralWSController extends BaseController
 {
 	function __construct() {
-
-
 		$this->Model = new ReferralModel();
 		$ep= base_url()."/Referral_ws/wsdl";
 		$server =$this->server = new \nusoap_server();
@@ -93,24 +89,34 @@ class ReferralWSController extends BaseController
 		'rpc',
 		'encoded',
 		'Webservice');
-
 	}
-
-    function index()  
-	{
-		if($this->request->uri->getSegment(2)== "wsdl") {
-			 $_SERVER['QUERY_STRING'] =  "wsdl";
+	
+    public function index()
+    {
+		if($this->request->uri->getSegment(2)=='wsdl') {
+			$_SERVER['QUERY_STRING'] ='wsdl';
 		} else {
-			 $_SERVER['QUERY_STRING'] =  "";
+			$_SERVER['QUERY_STRING'] ='';
 		}
 		$this->response->setHeader('Content-Type', 'text/xml');
 		$this->server->service(file_get_contents("php://input"));
     }
-
-	function test()
-	{
-		$data = $this->Model->getdischargeInformation('HOSP-2071422083643');
-		echo json_encode($data);
-	}
-
+	
+	public function wsCheck() 
+    { 
+        try {
+            $current_date = date('d-m-Y H:i:s');
+            $data=array(
+            "Response"=>'Webservice Is Online',
+            "DateTime"=>$current_date);
+                echo json_encode($data);
+        } 
+        catch (SoapFault $exception) 
+        {
+                return json_encode($exception);
+        } 
+    }
+	
 }
+
+

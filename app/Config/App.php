@@ -25,8 +25,8 @@ class App extends BaseConfig
      * @var string
      */
     
-     public $baseURL = 'https://hcpn.test';
-     //public $baseURL = BASE_URL;
+     //public $baseURL = 'https://10.11.132.103/hcpn';
+     public $baseURL = 'http://10.11.132.103/hcpn';
     /**
      * --------------------------------------------------------------------------
      * Index File
@@ -38,7 +38,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $indexPage = 'index.php';
+    public $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------
