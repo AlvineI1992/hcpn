@@ -504,6 +504,7 @@ if ( !function_exists('online') ) {
 			'physicalExamination'=>$clinicalInfo->physicalExamination,
 			'chiefComplaint'=>$clinicalInfo->chiefComplaint,
 			'clinicalHistory'=>$clinicalInfo->clinicalHistory,
+			'patientPan'=>$patientInfo->patientPan,
 			'findings'=>$clinicalInfo->findings,
 			'vitalSign'=>stripslashes($clinicalInfo->vitalSign),
 			'patientProvider'=>$providerInfo);
@@ -567,9 +568,10 @@ function getReferralFhud($hfhudcode)
 			 	'physicalExamination'=>$clinicalInfo->physicalExamination,
 			 	'clinicalHistory'=>$clinicalInfo->clinicalHistory,
 				'vitalSign'=>stripslashes($clinicalInfo->vitalSign), 
+				'patientPan'=>stripslashes($patientInfo->patientPan), 
 				'patientProvider'=>$providerID);
 			} 
-		 return $response;
+		 return json_encode($response);
     }
 }
 

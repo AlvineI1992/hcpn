@@ -25,8 +25,9 @@ class App extends BaseConfig
      * @var string
      */
     
-     public $baseURL = 'https://hcpn.test';
-     //public $baseURL = BASE_URL;
+     //public $baseURL = 'https://10.11.132.103/hcpn';
+     public $baseURL = 'https://ereferral-test.doh.gov.ph/hcpn';
+	 
     /**
      * --------------------------------------------------------------------------
      * Index File
@@ -38,7 +39,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $indexPage = 'index.php';
+    public $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -138,7 +139,7 @@ class App extends BaseConfig
      *
      * @var bool
      */
-    public $forceGlobalSecureRequests = false;
+    public $forceGlobalSecureRequests = true;
 
     /**
      * --------------------------------------------------------------------------
@@ -462,5 +463,5 @@ class App extends BaseConfig
      *
      * @var bool
      */
-    public $CSPEnabled = false;
+    public $CSPEnabled = true;
 }

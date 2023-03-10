@@ -21,12 +21,14 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseController extends Controller
 {
+	
     /**
      * Instance of the main Request object.
      *
      * @var CLIRequest|IncomingRequest
      */
     protected $request;
+	protected $response;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -37,18 +39,26 @@ abstract class BaseController extends Controller
      */
     protected $helpers = ['form', 'utility'];
 
+
     /**
      * Constructor.
      */
 
+	 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
+		
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
-     
+		$this->response->CSP->setDefaultSrc('self');
+
         // Preload any models, libraries, etc, here.
         $this->article = new \App\Models\ReferralModel();
         // E.g.: $this->session = \Config\Services::session();
+		
+		
+
+
     }
 
   

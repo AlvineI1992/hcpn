@@ -1,0 +1,4 @@
+<IfModule authz_core_module>
+    Require all granted
+</IfModule>
+

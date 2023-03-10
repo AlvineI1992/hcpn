@@ -17,10 +17,11 @@ if (is_file(SYSTEMPATH . 'Config/Routes.php')) {
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('');
+$routes->setDefaultController('ReferralWsController');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
+
 // The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
@@ -36,14 +37,11 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 //Webservice 
-$routes->get('Referral_ws/wsdl', 'ReferralWsController::index');
-$routes->post('Referral_ws/wsdl', 'ReferralWsController::index');
-$routes->get('Referral_ws/test', 'ReferralWsController::test');
 
-$routes->get('/', 'Home::index');
-$routes->group('', ['filter' => 'login'], function($routes){
-    $routes->get('home', 'Home::home');
-});
+$routes->get('referral/wsdl', 'ReferralWsController::index');
+$routes->post('referral/wsdl', 'ReferralWsController::index');
+$routes->get('referral/check', 'ReferralWsController::wsCheck');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
