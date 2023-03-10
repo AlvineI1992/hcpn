@@ -1,14 +1,15 @@
 <?php
 namespace App\Controllers;
-use nusoap_client;
+use econea\nusoap_client;
 use App\Controllers\BaseController;
 use App\Models\ReferralModel;
 
 class ReferralWSController extends BaseController
 {
 	function __construct() {
+
 		$this->Model = new ReferralModel();
-		$ep= base_url()."/Referral_ws/wsdl";
+		$ep= base_url()."/referral/wsdl";
 		$server =$this->server = new \nusoap_server();
 		$this->server->configureWSDL('homis',$ep,$ep);
 		$this->server->wsdl->schemaTargetNamespace = $ep;  
@@ -89,6 +90,8 @@ class ReferralWSController extends BaseController
 		'rpc',
 		'encoded',
 		'Webservice');
+		$response = service('response');
+
 	}
 	
     public function index()
@@ -113,7 +116,7 @@ class ReferralWSController extends BaseController
         } 
         catch (SoapFault $exception) 
         {
-                return json_encode($exception);
+              return json_encode($exception);
         } 
     }
 	

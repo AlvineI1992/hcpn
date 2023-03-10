@@ -41,7 +41,7 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var bool
      */
-    public $upgradeInsecureRequests = false;
+    public $upgradeInsecureRequests = true;
 
     //-------------------------------------------------------------------------
     // Sources allowed
@@ -137,7 +137,7 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var string|string[]|null
      */
-    public $mediaSrc;
+    public $mediaSrc = 'self';
 
     /**
      * Allows control over Flash and other plugins.
@@ -149,7 +149,7 @@ class ContentSecurityPolicy extends BaseConfig
     /**
      * @var string|string[]|null
      */
-    public $manifestSrc;
+    public $manifestSrc  = 'self';
 
     /**
      * Limits the kinds of plugins a page may invoke.
