@@ -17,7 +17,7 @@ class ReferralModel extends Model
     protected $med = 'referral_medicine';
 	protected $followup = 'referral_followup';
 	protected $meds = 'referral_medicine';
-	
+	protected $response =[];
 	function existLog($value)
 	{
 		$sql = $this->db->table($this->info);
@@ -70,13 +70,12 @@ class ReferralModel extends Model
 				$record->where('referral_track.LogID',$LogID);
 				$record->where('referral_track.dischDate is NOT NULL', NULL, FALSE);
 				$record->where('referral_track.admDate is NOT NULL', NULL, FALSE);
-			$record_count = $record->countAllResults();
-			$record_query = $record->get()->getRow();
+			 $record_query = $record->get()->getRow();
+			 $record_count = $record->countAllResults();
 			if(!$record) throw new Exception($this->db->_error_message(), $this->db->_error_number());
 
 
 			if($record_count === 0){
-			
 				return  $this->response = "No record found!";
 			}else{
 				
@@ -106,7 +105,7 @@ class ReferralModel extends Model
 					$med_query = $med->get()->getResultArray();
 				}
 
-				$this->return = array(
+				return $this->response = array(
 					'dischargeData'=>$result_record,
 					'drugs'=>$med_query,
 					'schedule'=>$schedule_query);
@@ -120,7 +119,7 @@ class ReferralModel extends Model
 					'message'=>'Error on Database!');
 			} else {
 				$this->db->transCommit();
-				return  $this->return;
+				return  $this->response;
 			}	
 		}catch (\Exception $e) {
 			$this->db->transRollback();
@@ -303,7 +302,7 @@ class ReferralModel extends Model
 
 	public  function checkFacility($fhudcode)
 	{	
-		$sql =$this->db->table('ref_facilities')->selectCount('hfhudcode')->where('hfhudcode', $fhudcode);
+		$sql =$this->db->table('ref_facilities')->selectCount('hfhudcode')->where('hfhudcode',$fhudcode);
 		return $sql->get()->getRow()->hfhudcode;
 	}
 
@@ -349,6 +348,8 @@ class ReferralModel extends Model
 			referral_patientdemo.patientZipCode as patientZipAddress');
 		$sql->join('referral_patientinfo','referral_information.LogID=referral_patientinfo.LogID','left');
 		$sql->join('referral_patientdemo','referral_patientdemo.LogID=referral_patientinfo.LogID','left');
+		$sql->join('referral_track','referral_track.LogID=referral_patientinfo.LogID','left');
+		$sql->where('referral_track.receivedDate IS NULL');
 		$sql->where('referral_information.fhudTo' ,$fhudcode);	
 		return $sql->get()->getResultArray();
 	}
@@ -453,6 +454,14 @@ class ReferralModel extends Model
 	
 	
 	
+	public function checkPatient(array $ids=[])
+	{
+		$sql = $this->db->table($this->patient);
+		$sql->where($ids);
+		$rowCount= $sql->get()->getNumRows();
+		return 	$rowCount > 0 ? true : false;
+	}
+
 	
 	
 	public  function checkReferral($fhudcode,$casenum)
@@ -520,6 +529,13 @@ class ReferralModel extends Model
 		return ($this->db->affected_rows() != 1) ? false : true;
 	}
 
-
+	public  function checkReferralToExist($ids)
+	{	
+		$query = $this->db->table('referral_patientinfo');
+		$query->select('referral_information.logid');
+		$query->join('referral_information', 'referral_information.logid = referral_patientinfo.logid','inner');
+		$query->where($ids);		
+		return $query->get()->getRow();
+	}
     
 }

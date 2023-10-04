@@ -120,6 +120,20 @@ class ReferralWSController extends BaseController
         } 
     }
 	
+	public function test()
+	{
+		$id=array(
+		'LogID'=>'HOSP-2031423022646',
+		'patientLastName'=>'SOMBRERO',
+		'patientFirstName'=>'JHOEBELLE',
+		'patientMiddleName'=>'TATEL',
+		'patientSuffix'=>'',
+		'patientBirthDate'=>'1989-12-05',
+		'patientSex'=>'F',
+		'patientCivilStatus'=>'X');
+		echo $this->Model->checkPatient($id);
+	}
+	
 }
 
 

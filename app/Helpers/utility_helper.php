@@ -267,28 +267,52 @@ if ( !function_exists('online') ) {
     if ( !function_exists('Refer') ) {
         function Refer($transmitData) 
 		{
+			log_message("error", $transmitData);
             $model = new \App\Models\ReferralModel;
             $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
             $data= json_decode($input,true);
-            if($model->checkFacility($data['fhudFrom']) != '1'){
-                     $response=array(
+			
+            if($model->checkFacility(trim($data['fhudFrom'])) != '1'){
+                    $response=array(
                     'code'=>'403',
                     'response'=>'Contact system administrator referring facility not exist/s',
                     'date'=>date('m/d/Y H:i:s'));
                     return json_encode($response);
               }
-              if($model->checkFacility($data['fhudto']) != '1'){
+              if($model->checkFacility(trim($data['fhudto'])) != '1'){
                     $response=array(
                     'code'=>'403',
                     'response'=>'Contact system administrator referral facility not exist/s',
                     'date'=>date('m/d/Y H:i:s'));
                     return json_encode($response);
              }
+			
+			$referralToIDs = array(
+			"patientLastName" =>$data['patientLastName'],
+			"patientFirstName" => $data['patientFirstName'],
+			"patientBirthDate" =>date('Y-m-d',strtotime($data['patientBirthDate'])),
+			"patientSex" =>$data['patientSex'],
+			"refferalDate" => $data['referralDate'],
+			"refferalTime" =>$data['referralTime'],
+			"typeOfReferral"=>$data['typeOfReferral'],
+			"fhudFrom"=> $data['fhudFrom'],
+			"fhudTo"=> $data['fhudto']);
+			
+			$referralToExist = $model->checkReferralToExist($referralToIDs);
+			
+			if($referralToExist->logid){
+				file_put_contents('result.txt',json_encode($referralToExist->logid));
+				$response=array('LogID'=>$referralToExist->logid,
+                       'code'=>"200",
+                       'message'=>'Referral already exist!',
+                       'response'=>'Referral code:'."=".$referralToExist->logid."|"."Patient name:".$data['patientLastName']." ".$data['patientFirstName']." ".$data['patientMiddlename'],
+                       'date'=>date('m/d/Y H:i:s'));
+                       return  json_encode($response);
+			}
+				
             $LogID=generateReferCode($data['fhudFrom']);
-          
             $check=$model->existLog($LogID)->count;
-    
-            if($check == 0){
+            if( $check == 0){
                 $referInfo=array('LogID'=>$LogID,
                'fhudFrom'=>$data['fhudFrom'], 
                'fhudTo'=>$data['fhudto'],
@@ -477,7 +501,7 @@ if ( !function_exists('online') ) {
 			'rprhreferral'=>$patientInfo->rprhreferral,
 			'rprhreferralmethod'=>$patientInfo->rprhreferralmethod,
 			'status'=>$patientInfo->status,
-			'referringContactNumber'=>$patientInfo->referringProviderContactNumber,
+			'referringContactNumber'=>($patientInfo->referringProviderContactNumber)?"": $patientInfo->referringProviderContactNumber,
 			'referralDate'=>$patientInfo->refferalDate,
 			'referralTime'=>$patientInfo->refferalTime,
 			'referralCategory'=>$patientInfo->referralCategory,
