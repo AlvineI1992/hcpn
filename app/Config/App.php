@@ -26,7 +26,7 @@ class App extends BaseConfig
      */
     
      //public $baseURL = 'https://10.11.132.103/hcpn';
-     public $baseURL = 'https://ereferral-test.doh.gov.ph/hcpn';
+     public $baseURL = 'https://ereferral.doh.gov.ph/hcpn';
 	 
     /**
      * --------------------------------------------------------------------------

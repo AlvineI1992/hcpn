@@ -120,6 +120,31 @@ class ReferralWSController extends BaseController
         } 
     }
 	
+	public function test()
+	{
+		$id=array(
+		'fhudFrom'=>'DOH000000000005945',
+        'fhudTo'=>'DOH000000000007489',
+		'typeOFReferral'=>'TRANS',
+		'patientLastName'=>'SOMBRERO',
+		'patientFirstName'=>'JHOEBELLE',
+		'patientMiddleName'=>'TATEL',
+		'patientSuffix'=>'',
+		'patientBirthDate'=>'1989-12-05',
+		'patientSex'=>'F',
+		'patientCivilStatus'=>'X');
+		
+		
+		if($this->Model->checkPatient($id)!==0  ){
+                    $response=array(
+					'LogID'=>$this->Model->checkPatient($id),
+                    'code'=>'104',
+                    'response'=>'Patient referral already exists!',
+                    'date'=>date('m/d/Y H:i:s'));
+                    return json_encode($response);
+             }
+	}
+	
 }
 
 
