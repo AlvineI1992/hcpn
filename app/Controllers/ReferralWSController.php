@@ -119,8 +119,6 @@ class ReferralWSController extends BaseController
               return json_encode($exception);
         } 
     }
-
-	
 }
 
 
