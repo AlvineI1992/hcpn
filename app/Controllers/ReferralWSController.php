@@ -5,7 +5,7 @@ use App\Controllers\BaseController;
 use App\Models\ReferralModel;
 
 class ReferralWSController extends BaseController
-{
+{ 
 	function __construct() {
 
 		$this->Model = new ReferralModel();
