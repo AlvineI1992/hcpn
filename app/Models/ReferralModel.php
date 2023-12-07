@@ -537,5 +537,14 @@ class ReferralModel extends Model
 		$query->where($ids);		
 		return $query->get()->getRow();
 	}
+
+	public  function wsCheck() 
+    { 
+        $current_date = date('d-m-Y H:i:s');
+        $data=array(
+        "Response"=>'Webservice Is Online',
+        "DateTime"=>$current_date);
+            return  json_encode($data);
+    }
     
 }

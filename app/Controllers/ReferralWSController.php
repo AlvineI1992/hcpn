@@ -9,15 +9,16 @@ class ReferralWSController extends BaseController
 	function __construct() {
 
 		$this->Model = new ReferralModel();
-		$ep= base_url()."/referral/wsdl";
+		$end_point= base_url()."referral/wsdl";
 		$server =$this->server = new \nusoap_server();
-		$this->server->configureWSDL('homis',$ep,$ep);
-		$this->server->wsdl->schemaTargetNamespace = $ep;  
-		$this->server->register('wsCheck',             
+		$this->server->configureWSDL('hcpn',$end_point,$end_point);
+		$this->server->wsdl->schemaTargetNamespace = $end_point;  
+
+		$server->register('wsCheck',             
 		array(), 
 		array("return"=>"xsd:string"),
-				$ep,
-				$ep.'#wsCheck',
+				$end_point,
+				$end_point.'#wsCheck',
 				'rpc',
 				'encoded',
 				'Webservice'
@@ -25,32 +26,32 @@ class ReferralWSController extends BaseController
 		$server->register('Refer',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-			$ep,
-			$ep.'#Refer',
+			$end_point,
+			$end_point.'#Refer',
 			'rpc',
 			'encoded',
 			'Webservice');
 	    $server->register('getReferralData',             
 			array('data' => 'xsd:string'), 
 			array("return"=>"xsd:string"),
-					$ep,
-					$ep.'#getReferralData',
+					$end_point,
+					$end_point.'#getReferralData',
 					'rpc',
 					'encoded',
 					'Webservice');	
 		$server->register('getReferralFhud',             
 			array('data' => 'xsd:string'), 
 			array("return"=>"xsd:string"),
-					$ep,
-					$ep.'#getReferralFhud',
+					$end_point,
+					$end_point.'#getReferralFhud',
 					'rpc',
 					'encoded',
 					'Webservice');
 		$server->register('online',             
 			array('data' => "xsd:string"), 
 			array("return"=>"xsd:string"),
-					$ep,
-					$ep.'#online',
+					$end_point,
+					$end_point.'#online',
 					'rpc',
 					'encoded',
 					'Webservice');
@@ -58,8 +59,8 @@ class ReferralWSController extends BaseController
 		$server->register('receive',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$ep,
-		$ep.'#receive',
+		$end_point,
+		$end_point.'#receive',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -67,8 +68,8 @@ class ReferralWSController extends BaseController
 		$server->register('admit',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$ep,
-		$ep.'#admit',
+		$end_point,
+		$end_point.'#admit',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -76,8 +77,8 @@ class ReferralWSController extends BaseController
 		$server->register('discharge',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$ep,
-		$ep.'#discharge',
+		$end_point,
+		$end_point.'#discharge',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -85,8 +86,8 @@ class ReferralWSController extends BaseController
 		$server->register('getDischargeData',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$ep,
-		$ep.'#getDischargeData',
+		$end_point,
+		$end_point.'#getDischargeData',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -103,9 +104,10 @@ class ReferralWSController extends BaseController
 		}
 		$this->response->setHeader('Content-Type', 'text/xml');
 		$this->server->service(file_get_contents("php://input"));
+		
     }
 	
-	public function wsCheck() 
+/* 	public function wsCheck() 
     { 
         try {
             $current_date = date('d-m-Y H:i:s');
@@ -114,11 +116,12 @@ class ReferralWSController extends BaseController
             "DateTime"=>$current_date);
                 echo json_encode($data);
         } 
-        catch (SoapFault $exception) 
+        catch (SoapFault $excend_pointtion) 
         {
-              return json_encode($exception);
-        } 
-    }
+              return json_encode($excend_pointtion);
+        }  
+    }*/
+	
 }
 
 

@@ -1,17 +1,2 @@
-User-agent: Googlebot
-Disallow: /*? 
-Option 2: Meta tags
-
-Another standard, which can be more convenient for page-by-page use, involves adding a <META> tag to an HTML page to tell robots not to index the page. This standard is described at http://www.robotstxt.org/wc/exclusion.html#meta.
-
-To prevent all robots from indexing a page on your site, you'd place the following meta tag into the <HEAD> section of your page:
-
-<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
-
-To allow other robots to index the page on your site, preventing only Search Engine's robots from indexing the page, you'd use the following tag:
-
-<META NAME="GOOGLEBOT" CONTENT="NOINDEX, NOFOLLOW">
-
-To allow robots to index the page on your site but instruct them not to follow outgoing links, you'd use the following tag:
-
-<META NAME="ROBOTS" CONTENT="NOFOLLOW">
+User-agent: *
+Disallow: 

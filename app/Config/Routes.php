@@ -1,26 +1,10 @@
 <?php
 
-namespace Config;
+use CodeIgniter\Router\RouteCollection;
 
-// Create a new instance of our RouteCollection class.
-$routes = Services::routes();
-
-// Load the system's routing file first, so that the app and ENVIRONMENT
-// can override as needed.
-if (is_file(SYSTEMPATH . 'Config/Routes.php')) {
-    require SYSTEMPATH . 'Config/Routes.php';
-}
-
-/*
- * --------------------------------------------------------------------
- * Router Setup
- * --------------------------------------------------------------------
+/**
+ * @var RouteCollection $routes
  */
-$routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('ReferralWsController');
-$routes->setDefaultMethod('index');
-$routes->setTranslateURIDashes(false);
-$routes->set404Override();
 
 // The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
 // where controller filters or CSRF protection are bypassed.
@@ -33,15 +17,38 @@ $routes->set404Override();
  * Route Definitions
  * --------------------------------------------------------------------
  */
-
+ 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 //Webservice 
+// Set default route for referral/wsdl
 
-$routes->get('referral/wsdl', 'ReferralWsController::index');
-$routes->post('referral/wsdl', 'ReferralWsController::index');
-$routes->get('referral/check', 'ReferralWsController::Test');
 
+
+$routes->group('referral', ['namespace' => 'App\Controllers'], function ($routes) {
+    $routes->get('wsdl', 'ReferralWsController::index');
+    $routes->post('wsdl', 'ReferralWsController::index');
+});
+
+$routes->group('auth', ['namespace' => 'Myth\Auth\Controllers'], function ($routes) {
+    // Authentication routes    
+  
+    $routes->get('login', 'AuthController::login', ['as' => 'login']);
+    $routes->post('login', 'AuthController::attemptLogin');
+    $routes->get('logout', 'AuthController::logout', ['as' => 'logout']);
+
+    // Registration routes
+    $routes->get('register', 'AuthController::register', ['as' => 'register']);
+    $routes->post('register', 'AuthController::attemptRegister');
+
+    // Forgot password routes
+    $routes->get('forgot', 'AuthController::forgotPassword', ['as' => 'forgot']);
+    $routes->post('forgot', 'AuthController::attemptForgot');
+
+    // Reset password routes
+    $routes->get('reset/(:hash)', 'AuthController::resetPassword/$1', ['as' => 'reset']);
+    $routes->post('reset/(:hash)', 'AuthController::attemptReset/$1');
+});
 /*
  * --------------------------------------------------------------------
  * Additional Routing
@@ -55,6 +62,3 @@ $routes->get('referral/check', 'ReferralWsController::Test');
  * You will have access to the $routes object within that file without
  * needing to reload it.
  */
-if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
-    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
-}

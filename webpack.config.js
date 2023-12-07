@@ -1,10 +1,30 @@
+// webpack.config.js
 const path = require('path');
 
 module.exports = {
-  mode: 'production',
-  entry: './public/js/app.js',
+  entry: './src/index.js', // Your main entry point
   output: {
-    path     : path.resolve(__dirname),
-    filename : 'public/js/dist/bundle.js'
-  }
+    filename: 'bundle.js', // Output file name
+    path: path.resolve(__dirname, 'public/dist'), // Output directory
+  },
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: ['file-loader'],
+      },
+    ]
+  },
 };
