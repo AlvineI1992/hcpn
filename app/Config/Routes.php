@@ -23,8 +23,6 @@ use CodeIgniter\Router\RouteCollection;
 //Webservice 
 // Set default route for referral/wsdl
 
-
-
 $routes->group('referral', ['namespace' => 'App\Controllers'], function ($routes) {
     $routes->get('wsdl', 'ReferralWsController::index');
     $routes->post('wsdl', 'ReferralWsController::index');

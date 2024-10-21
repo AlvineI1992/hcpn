@@ -47,11 +47,12 @@ abstract class BaseController extends Controller
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
-        // Do Not Edit This Line
-        parent::initController($request, $response, $logger);
+     // Do Not Edit This Line
+     parent::initController($request, $response, $logger);
+     $this->response->CSP->setDefaultSrc('self');
 
-        // Preload any models, libraries, etc, here.
-
-        // E.g.: $this->session = \Config\Services::session();
+     // Preload any models, libraries, etc, here.
+     $this->article = new \App\Models\ReferralModel();
+     // E.g.: $this->session = \Config\Services::session();
     }
 }

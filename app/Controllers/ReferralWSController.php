@@ -5,20 +5,19 @@ use App\Controllers\BaseController;
 use App\Models\ReferralModel;
 
 class ReferralWSController extends BaseController
-{ 
+{
 	function __construct() {
 
 		$this->Model = new ReferralModel();
-		$end_point= base_url()."referral/wsdl";
+		$ep= base_url()."/referral/wsdl";
 		$server =$this->server = new \nusoap_server();
-		$this->server->configureWSDL('hcpn',$end_point,$end_point);
-		$this->server->wsdl->schemaTargetNamespace = $end_point;  
-
-		$server->register('wsCheck',             
+		$this->server->configureWSDL('homis',$ep,$ep);
+		$this->server->wsdl->schemaTargetNamespace = $ep;  
+		$this->server->register('wsCheck',             
 		array(), 
 		array("return"=>"xsd:string"),
-				$end_point,
-				$end_point.'#wsCheck',
+				$ep,
+				$ep.'#wsCheck',
 				'rpc',
 				'encoded',
 				'Webservice'
@@ -26,32 +25,32 @@ class ReferralWSController extends BaseController
 		$server->register('Refer',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-			$end_point,
-			$end_point.'#Refer',
+			$ep,
+			$ep.'#Refer',
 			'rpc',
 			'encoded',
 			'Webservice');
 	    $server->register('getReferralData',             
 			array('data' => 'xsd:string'), 
 			array("return"=>"xsd:string"),
-					$end_point,
-					$end_point.'#getReferralData',
+					$ep,
+					$ep.'#getReferralData',
 					'rpc',
 					'encoded',
 					'Webservice');	
 		$server->register('getReferralFhud',             
 			array('data' => 'xsd:string'), 
 			array("return"=>"xsd:string"),
-					$end_point,
-					$end_point.'#getReferralFhud',
+					$ep,
+					$ep.'#getReferralFhud',
 					'rpc',
 					'encoded',
 					'Webservice');
 		$server->register('online',             
 			array('data' => "xsd:string"), 
 			array("return"=>"xsd:string"),
-					$end_point,
-					$end_point.'#online',
+					$ep,
+					$ep.'#online',
 					'rpc',
 					'encoded',
 					'Webservice');
@@ -59,8 +58,8 @@ class ReferralWSController extends BaseController
 		$server->register('receive',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$end_point,
-		$end_point.'#receive',
+		$ep,
+		$ep.'#receive',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -68,8 +67,8 @@ class ReferralWSController extends BaseController
 		$server->register('admit',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$end_point,
-		$end_point.'#admit',
+		$ep,
+		$ep.'#admit',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -77,8 +76,8 @@ class ReferralWSController extends BaseController
 		$server->register('discharge',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$end_point,
-		$end_point.'#discharge',
+		$ep,
+		$ep.'#discharge',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -86,8 +85,8 @@ class ReferralWSController extends BaseController
 		$server->register('getDischargeData',             
 		array('data' => "xsd:string"), 
 		array("return"=>"xsd:string"),
-		$end_point,
-		$end_point.'#getDischargeData',
+		$ep,
+		$ep.'#getDischargeData',
 		'rpc',
 		'encoded',
 		'Webservice');
@@ -97,15 +96,43 @@ class ReferralWSController extends BaseController
 	
     public function index()
     {
-		if($this->request->uri->getSegment(2)=='wsdl') {
-			$_SERVER['QUERY_STRING'] ='wsdl';
-		} else {
-			$_SERVER['QUERY_STRING'] ='';
+
+		log_message('debug', 'Entering index method for SOAP handling.');
+
+		// Read the input from php://input or getBody()
+		$input = file_get_contents("php://input");
+		if (empty($input)) {
+			$input = $this->request->getBody();
 		}
+	
+		log_message('debug', 'SOAP Request Input: ' . $input);
+	
+		if ($this->request->uri->getSegment(2) == 'wsdl') {
+			$_SERVER['QUERY_STRING'] = 'wsdl';
+		} else {
+			$_SERVER['QUERY_STRING'] = '';
+		}
+	
+		// Set the response type and handle the request
 		$this->response->setHeader('Content-Type', 'text/xml');
-		$this->server->service(file_get_contents("php://input"));
-		
+		$this->server->service($input);
     }
+	
+	public function wsCheck() 
+    { 
+        try {
+            $current_date = date('d-m-Y H:i:s');
+            $data=array(
+            "Response"=>'Webservice Is Online',
+            "DateTime"=>$current_date);
+                echo json_encode($data);
+        } 
+        catch (SoapFault $exception) 
+        {
+              return json_encode($exception);
+        } 
+    }
+	
 }
 
 
