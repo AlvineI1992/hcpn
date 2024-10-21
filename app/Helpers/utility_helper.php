@@ -264,15 +264,14 @@ if ( !function_exists('online') ) {
 }
 
 
-    if ( !function_exists('Refer') ) {
+ /*    if ( !function_exists('Refer') ) {
         function Refer($transmitData) 
 		{
-			log_message("error", $transmitData);
             $model = new \App\Models\ReferralModel;
             $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
             $data= json_decode($input,true);
-			
             if($model->checkFacility(trim($data['fhudFrom'])) != '1'){
+                log_message("error", 'Referring Facility Not Exist');
                     $response=array(
                     'code'=>'403',
                     'response'=>'Contact system administrator referring facility not exist/s',
@@ -462,6 +461,179 @@ if ( !function_exists('online') ) {
             
             
 		}
+    } */
+
+
+    if ( !function_exists('Refer') ) {
+    function Refer($transmitData) 
+{
+    $model = new \App\Models\ReferralModel;
+    $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+    $data = json_decode($input, true);
+
+    // Basic validations
+    $requiredFields = [
+        'fhudFrom', 'fhudto', 'patientLastName', 'patientFirstName', 
+        'patientBirthDate', 'patientSex', 'referralDate', 'referralTime', 
+        'typeOfReferral'
+    ];
+
+    foreach ($requiredFields as $field) {
+        if (empty(trim($data[$field]))) {
+            $response = [
+                'code' => '400',
+                'response' => "Missing required field: $field",
+                'date' => date('m/d/Y H:i:s')
+            ];
+            return json_encode($response);
+        }
+    }
+
+    // Validate date formats
+    $dateFields = ['patientBirthDate', 'referralDate'];
+    foreach ($dateFields as $dateField) {
+        if (!DateTime::createFromFormat('Y-m-d', $data[$dateField])) {
+            $response = [
+                'code' => '400',
+                'response' => "Invalid date format for field: $dateField. Expected format: Y-m-d",
+                'date' => date('m/d/Y H:i:s')
+            ];
+            return json_encode($response);
+        }
+    }
+
+    // Validate sex
+    if (!in_array($data['patientSex'], ['M', 'F'])) {
+        $response = [
+            'code' => '400',
+            'response' => "Invalid value for patientSex. Expected 'M' or 'F'.",
+            'date' => date('m/d/Y H:i:s')
+        ];
+        return json_encode($response);
+    }
+
+    // Check facility existence
+    if ($model->checkFacility(trim($data['fhudFrom'])) != '1') {
+        log_message("error", 'Referring Facility Not Exist');
+        $response = [
+            'code' => '403',
+            'response' => 'Contact system administrator: referring facility does not exist.',
+            'date' => date('m/d/Y H:i:s')
+        ];
+        return json_encode($response);
+    }
+
+    if ($model->checkFacility(trim($data['fhudto'])) != '1') {
+        $response = [
+            'code' => '403',
+            'response' => 'Contact system administrator: referral facility does not exist.',
+            'date' => date('m/d/Y H:i:s')
+        ];
+        return json_encode($response);
+    }
+
+    // Prepare referral data
+    $referralToIDs = [
+        "patientLastName" => $data['patientLastName'],
+        "patientFirstName" => $data['patientFirstName'],
+        "patientBirthDate" => date('Y-m-d', strtotime($data['patientBirthDate'])),
+        "patientSex" => $data['patientSex'],
+        "refferalDate" => $data['referralDate'],
+        "refferalTime" => $data['referralTime'],
+        "typeOfReferral" => $data['typeOfReferral'],
+        "fhudFrom" => $data['fhudFrom'],
+        "fhudTo" => $data['fhudto']
+    ];
+
+    // Check if referral already exists
+    $referralToExist = $model->checkReferralToExist($referralToIDs);
+    if ($referralToExist->logid) {
+        file_put_contents('result.txt', json_encode($referralToExist->logid));
+        $response = [
+            'LogID' => $referralToExist->logid,
+            'code' => "200",
+            'message' => 'Referral already exists!',
+            'response' => 'Referral code:=' . $referralToExist->logid . "| Patient name:" . $data['patientLastName'] . " " . $data['patientFirstName'] . " " . $data['patientMiddlename'],
+            'date' => date('m/d/Y H:i:s')
+        ];
+        return json_encode($response);
+    }
+
+    // Generate LogID and check its existence
+    $LogID = generateReferCode($data['fhudFrom']);
+    $check = $model->existLog($LogID)->count;
+    if ($check == 0) {
+        // Prepare data for insertion
+        $referInfo = [
+            'LogID' => $LogID,
+            'fhudFrom' => $data['fhudFrom'], 
+            'fhudTo' => $data['fhudto'],
+            'typeOfReferral' => $data['typeOfReferral'],
+            'referralReason' => $data['referralReason'] ?? '',
+            'otherReasons' => $data['otherReasons'] ?? '',
+            'patientPan' => $data['pan'] ?? '',
+            'remarks' => $data['remarks'] ?? '',
+            'referralContactPerson' => $data['referralContactPerson'] ?? '',
+            'referringProviderContactNumber' => $data['referringContactNumber'] ?? '',
+            'referralContactPersonDesignation' => $data['referralPersonDesignation'] ?? '',
+            'rprhreferral' => $data['rprhreferral'] ?? '',
+            'rprhreferralmethod' => $data['rprhreferralmethod'] ?? '',
+            'status' => $data['status'] ?? '',
+            'refferalDate' => $data['referralDate'],
+            'refferalTime' => $data['referralTime'],
+            'referralCategory' => $data['referralCategory'] ?? '',
+            'logDate' => date('Y/m/d H:i:s')
+        ];
+
+        // Validate necessary fields for referral info
+        foreach ($referInfo as $key => $value) {
+            if ($key !== 'LogID' && empty(trim($value))) {
+                $response = [
+                    'LogID' => $LogID,
+                    'code' => '400',
+                    'response' => "Missing required field in referral info: $key",
+                    'date' => date('m/d/Y H:i:s')
+                ];
+                return json_encode($response);
+            }
+        }
+
+        // Similar validation can be added for patientInfo, patientDemo, patientClinic, etc.
+
+        // Insert the referral transaction
+        $param = [
+            'info' => $referInfo,
+            // Add patient, demo, clinic, etc.
+        ];
+
+        $trans = $model->referralTransaction($param);
+        if ($trans['code'] == '200') { 
+            $response = [
+                'LogID' => $LogID,
+                'code' => $trans['code'],
+                'message' => $trans['message'],
+                'response' => 'Referral code:=' . $LogID . "| Patient name:" . $data['patientLastName'] . " " . $data['patientFirstName'] . " " . $data['patientMiddlename'],
+                'date' => date('m/d/Y H:i:s')
+            ];
+            return json_encode($response);
+        } else {
+            $response = [
+                'code' => $trans['code'],
+                'message' => $trans['message'],
+                'date' => date('m/d/Y H:i:s')
+            ];
+            return json_encode($response);
+        }
+    } else {
+        $response = [
+            'LogID' => $LogID,
+            'code' => '104',
+            'response' => 'Referral already exists!',
+            'date' => date('m/d/Y H:i:s')
+        ];
+        return json_encode($response);
+    }
+}
     }
 
     if ( !function_exists('getReferralData') ) {

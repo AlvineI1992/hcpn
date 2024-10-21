@@ -106,22 +106,6 @@ class ReferralWSController extends BaseController
 		$this->server->service(file_get_contents("php://input"));
 		
     }
-	
-/* 	public function wsCheck() 
-    { 
-        try {
-            $current_date = date('d-m-Y H:i:s');
-            $data=array(
-            "Response"=>'Webservice Is Online',
-            "DateTime"=>$current_date);
-                echo json_encode($data);
-        } 
-        catch (SoapFault $excend_pointtion) 
-        {
-              return json_encode($excend_pointtion);
-        }  
-    }*/
-	
 }
 
 
