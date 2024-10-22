@@ -96,9 +96,6 @@ class ReferralWSController extends BaseController
 	
     public function index()
     {
-
-		log_message('debug', 'Entering index method for SOAP handling.');
-
 		// Read the input from php://input or getBody()
 		$input = file_get_contents("php://input");
 		if (empty($input)) {
