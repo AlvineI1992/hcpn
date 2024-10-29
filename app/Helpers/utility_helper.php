@@ -377,212 +377,15 @@ if ( !function_exists('online') ) {
 }
 
 
- /*    if ( !function_exists('Refer') ) {
-        function Refer($transmitData) 
-		{
-            $model = new \App\Models\ReferralModel;
-            $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
-            $data= json_decode($input,true);
-            if($model->checkFacility(trim($data['fhudFrom'])) != '1'){
-                log_message("error", 'Referring Facility Not Exist');
-                    $response=array(
-                    'code'=>'403',
-                    'response'=>'Contact system administrator referring facility not exist/s',
-                    'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-              }
-              if($model->checkFacility(trim($data['fhudto'])) != '1'){
-                    $response=array(
-                    'code'=>'403',
-                    'response'=>'Contact system administrator referral facility not exist/s',
-                    'date'=>date('m/d/Y H:i:s'));
-                    return json_encode($response);
-             }
-			
-			$referralToIDs = array(
-			"patientLastName" =>$data['patientLastName'],
-			"patientFirstName" => $data['patientFirstName'],
-			"patientBirthDate" =>date('Y-m-d',strtotime($data['patientBirthDate'])),
-			"patientSex" =>$data['patientSex'],
-			"refferalDate" => $data['referralDate'],
-			"refferalTime" =>$data['referralTime'],
-			"typeOfReferral"=>$data['typeOfReferral'],
-			"fhudFrom"=> $data['fhudFrom'],
-			"fhudTo"=> $data['fhudto']);
-			
-			$referralToExist = $model->checkReferralToExist($referralToIDs);
-			
-			if($referralToExist->logid){
-				file_put_contents('result.txt',json_encode($referralToExist->logid));
-				$response=array('LogID'=>$referralToExist->logid,
-                       'code'=>"200",
-                       'message'=>'Referral already exist!',
-                       'response'=>'Referral code:'."=".$referralToExist->logid."|"."Patient name:".$data['patientLastName']." ".$data['patientFirstName']." ".$data['patientMiddlename'],
-                       'date'=>date('m/d/Y H:i:s'));
-                       return  json_encode($response);
-			}
-				
-            $LogID=generateReferCode($data['fhudFrom']);
-            $check=$model->existLog($LogID)->count;
-            if( $check == 0){
-                $referInfo=array('LogID'=>$LogID,
-               'fhudFrom'=>$data['fhudFrom'], 
-               'fhudTo'=>$data['fhudto'],
-               'typeOfReferral'=>$data['typeOfReferral'],
-               'referralReason'=>$data['referralReason'],
-               'otherReasons'=>$data['otherReasons'],
-               'patientPan'=>$data['pan'],
-               'remarks'=>$data['remarks'],
-               'referralContactPerson'=>$data['referralContactPerson'],
-               'referringProviderContactNumber'=>$data['referringContactNumber'],
-               'referralContactPersonDesignation'=>$data['referralPersonDesignation'],
-               'rprhreferral'=>$data['rprhreferral'],
-               'rprhreferralmethod'=>$data['rprhreferralmethod'],
-               'status'=>$data['status'],
-               'refferalDate'=> $data['referralDate'],
-               'refferalTime'=>$data['referralTime'],
-               'referralCategory'=>$data['referralCategory'],
-               'logDate'=>date('Y/m/d H:i:s'));
-            
-               $patientInfo=array('LogID'=>$LogID,
-               'FamilyID'=>$data['familyNumber'],
-               'phicNum'=>$data['phicNumber'],
-               'patientLastName'=>$data['patientLastName'],
-               'patientFirstName'=>$data['patientFirstName'],
-               'patientSuffix'=>$data['patientSuffix'],
-               'patientMiddlename'=>$data['patientMiddlename'],
-               'patientBirthDate'=>$data['patientBirthDate'],
-               'patientSex'=>$data['patientSex'],
-               'patientContactNumber'=>$data['patientContactNumber'],
-               'patientCivilStatus'=>$data['patientCivilStatus'],
-               'patientReligion'=>$data['patientReligion'],
-               'patientBloodType'=>$data['patientBloodType'],
-               'patientBloodTypeRH'=>$data['patientBloodTypeRH']);
-            
-               $patientDemo=array('LogID'=>$LogID,
-               'patientStreetAddress'=>$data['patientStreetAddress'],
-               'patientBrgyCode'=>$data['patientBrgyAddress'],
-               'patientMundCode'=>$data['patientMunAddress'],
-               'patientProvCode'=>$data['patientProvAddress'],
-               'patientRegCode'=>$data['patientRegAddress'],
-               'patientZipCode'=>$data['patientZipAddress']);
-            
-               $patientClinic=array('LogID'=>$LogID,
-               'clinicalDiagnosis'=>$data['clinicalDiagnosis'],
-               'clinicalHistory'=>$data['clinicalHistory'] ,
-               'physicalExamination'=>$data['physicalExamination'],
-               'chiefComplaint'=>$data['chiefComplaint'],
-               'findings'=>$data['findings'],
-               'vitals'=>json_encode($data['vitalSign']));
-               
-               $track=array('LogID'=>$LogID);
-            
-               $provConsu=array(
-                'LogID'=>$LogID,
-                'provider_last'=>$data['patientProvider'][0]['ProviderLast'],
-                'provider_first'=>$data['patientProvider'][0]['ProviderFirst'],
-                'provider_middle'=>$data['patientProvider'][0]['ProviderMiddle'],
-                'provider_suffix'=>$data['patientProvider'][0]['ProviderSuffix'],
-                'provider_contact'=>$data['patientProvider'][0]['ProviderContactNo'],
-                'provider_type'=>$data['patientProvider'][0]['ProviderType']);
-
-                $provRefer=array(
-                    'LogID'=>$LogID,
-                    'provider_last'=>$data['patientProvider'][1]['ProviderLast'],
-                    'provider_first'=>$data['patientProvider'][1]['ProviderFirst'],
-                    'provider_middle'=>$data['patientProvider'][1]['ProviderMiddle'],
-                    'provider_suffix'=>$data['patientProvider'][1]['ProviderSuffix'],
-                    'provider_contact'=>$data['patientProvider'][1]['ProviderContactNo'],
-                    'provider_type'=>$data['patientProvider'][1]['ProviderType']);
-              
-               
-               if(!$referInfo){	
-                   $response=array(
-                   'LogID'=>$LogID,
-                   'code'=>'103',
-                   'response'=>'Invalid parameter: Please check referral data'.$referInfo,
-                   'date'=>date('m/d/Y H:i:s'));
-                   $model->insertLog($response);
-                   return  json_encode($response);
-               }else if(!$patientInfo){
-                   $response=array(
-                   'LogID'=>$LogID,
-                   'code'=>'103',	
-                   'response'=>'Invalid parameter: Please check patient data'.$patientInfo,
-                   'date'=>date('m/d/Y H:i:s'));
-                   $model->insertLog('referral_logs',$response);
-                   return  json_encode($response);
-               }else if(!$patientDemo){
-                   $response=array(
-                   'LogID'=>$LogID,
-                   'code'=>'103',
-                   'response'=>'Invalid parameter: Please check  demographic data'.$patientDemo,
-                   'date'=>date('m/d/Y H:i:s'));
-                   $model->insertLog($response);
-                   return  json_encode($response);
-               }else if(!$patientClinic){
-                   $response=array(
-                   'LogID'=>$LogID,
-                   'code'=>'103',
-                   'response'=>'Invalid parameter: Please check clinical data!'.$patientClinic,
-                   'date'=>date('m/d/Y H:i:s'));
-                   $model->insertLog($response);
-                   return json_encode($response);
-                   
-               }else if(!$data['patientProvider']){
-                   $response=array(
-                   'LogID'=>$LogID,
-                   'code'=>'103',
-                   'response'=>'Invalid parameter: Please check provider data!'.json_encode($data),
-                   'date'=>date('m/d/Y H:i:s'));
-                   $model->insertLog($response);
-               }else{
-                    $param = array(
-                    'info'=>$referInfo,
-                    'patient'=>$patientInfo,
-                    'demo'=>$patientDemo,
-                    'clinic'=>$patientClinic,
-                    'refer'=>$provRefer,
-                    'consu'=>$provConsu);
-               
-                 $trans = $model->referralTransaction($param);
-               if($trans['code'] == '200'){ 
-                    $response=array(
-                       'LogID'=>$LogID,
-                       'code'=>$trans['code'],
-                       'message'=>$trans['message'],
-                       'response'=>'Referral code:'."=".$LogID."|"."Patient name:".$data['patientLastName']." ".$data['patientFirstName']." ".$data['patientMiddlename'],
-                       'date'=>date('m/d/Y H:i:s'));
-                       return  json_encode($response);
-                    }else{
-                        $response=array(
-                            'code'=>$trans['code'],
-                            'message'=>$trans['message'],
-                            'date'=>date('m/d/Y H:i:s'));
-                            return  json_encode($response);
-                    }
-                
-               }
-            }else{
-                $response=array(
-                'LogID'=>$LogID,
-                'code'=>'104',
-                'response'=>'Referral Exist!',
-                'date'=>date('m/d/Y H:i:s'));
-                return  json_encode($response);
-            }		
-            
-            
-		}
-    } */
-
 
     if ( !function_exists('Refer') ) {
     function Refer($transmitData) 
 {
     $model = new \App\Models\ReferralModel;
     $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($transmitData));
+   
     $data = json_decode($input, true);
+  
 
     // Basic validations
     $requiredFields = [
@@ -601,19 +404,6 @@ if ( !function_exists('online') ) {
             return json_encode($response);
         }
     }
-
-    /* // Validate date formats
-    $dateFields = ['patientBirthDate', 'referralDate'];
-    foreach ($dateFields as $dateField) {
-        if (!DateTime::createFromFormat('m-d-Y', $data[$dateField])) {
-            $response = [
-                'code' => '400',
-                'response' => "Invalid date format for field: $dateField. Expected format: Y-m-d",
-                'date' => date('m/d/Y H:i:s')
-            ];
-            return json_encode($response);
-        }
-    } */
 
     // Validate sex
     if (!in_array($data['patientSex'], ['M', 'F'])) {
@@ -659,10 +449,9 @@ if ( !function_exists('online') ) {
     ];
 
     // Check if referral already exists
-     $referralToExist = $model->checkReferralToExist($referralToIDs);
-   
+      $referralToExist = $model->checkReferralToExist($referralToIDs);
     if ($referralToExist) {
-        file_put_contents('result.txt', json_encode($referralToExist->LogID));
+    
         $response = [
             'LogID' => $referralToExist->LogID,
             'code' => "200",
@@ -674,7 +463,7 @@ if ( !function_exists('online') ) {
     }
 
     // Generate LogID and check its existence
-    $LogID = generateReferCode($data['fhudFrom']);
+     $LogID = generateReferCode($data['fhudFrom']);
     $check = $model->existLog($LogID)->count;
     if ($check == 0) {
         // Prepare data for insertion
@@ -699,51 +488,44 @@ if ( !function_exists('online') ) {
             'logDate' => date('Y/m/d H:i:s')
         ];
 
-     /*    // Validate necessary fields for referral info
-        foreach ($referInfo as $key => $value) {
-            if ($key !== 'LogID' && empty(trim($value))) {
-                $response = [
-                    'LogID' => $LogID,
-                    'code' => '400',
-                    'response' => "Missing required field in referral info: $key",
-                    'date' => date('m/d/Y H:i:s')
-                ];
-                return json_encode($response);
-            }
-        } */
+        $patientInfo = array(
+          
+            'LogID' => isset($LogID) ? $LogID : null, 
+            'FamilyID' => isset($data['familyNumber']) ? $data['familyNumber'] : null,
+            'phicNum' => isset($data['phicNumber']) ? $data['phicNumber'] : null,
+            'patientLastName' => isset($data['patientLastName']) ? $data['patientLastName'] : '',
+            'patientFirstName' => isset($data['patientFirstName']) ? $data['patientFirstName'] : '',
+            'patientSuffix' => isset($data['patientSuffix']) ? $data['patientSuffix'] : '',
+            'patientMiddlename' => isset($data['patientMiddlename']) ? $data['patientMiddlename'] : '',
+            'patientBirthDate' => isset($data['patientBirthDate']) ? $data['patientBirthDate'] : '',
+            'patientSex' => isset($data['patientSex']) ? $data['patientSex'] : null,
+            'patientContactNumber' => isset($data['patientContactNumber']) ? $data['patientContactNumber'] : null,
+            'patientCivilStatus' => isset($data['patientCivilStatus']) ? $data['patientCivilStatus'] :null,
+            'patientReligion' => isset($data['patientReligion']) ? $data['patientReligion'] : null,
+            'patientBloodType' => isset($data['patientBloodType']) ? $data['patientBloodType'] : null,
+            'patientBloodTypeRH' => isset($data['patientBloodTypeRH']) ? $data['patientBloodTypeRH'] : null
+        );
 
-        // Similar validation can be added for patientInfo, patientDemo, patientClinic, etc.
-
-        $patientInfo=array('LogID'=>$LogID,
-        'FamilyID'=>$data['familyNumber'],
-        'phicNum'=>$data['phicNumber'],
-        'patientLastName'=>$data['patientLastName'],
-        'patientFirstName'=>$data['patientFirstName'],
-        'patientSuffix'=>$data['patientSuffix'],
-        'patientMiddlename'=>$data['patientMiddlename'],
-        'patientBirthDate'=>$data['patientBirthDate'],
-        'patientSex'=>$data['patientSex'],
-        'patientContactNumber'=>$data['patientContactNumber'],
-        'patientCivilStatus'=>$data['patientCivilStatus'],
-        'patientReligion'=>$data['patientReligion'],
-        'patientBloodType'=>$data['patientBloodType'],
-        'patientBloodTypeRH'=>$data['patientBloodTypeRH']);
-
-        $patientDemo=array('LogID'=>$LogID,
-        'patientStreetAddress'=>$data['patientStreetAddress'],
-        'patientBrgyCode'=>$data['patientBrgyAddress'],
-        'patientMundCode'=>$data['patientMunAddress'],
-        'patientProvCode'=>$data['patientProvAddress'],
-        'patientRegCode'=>$data['patientRegAddress'],
-        'patientZipCode'=>$data['patientZipAddress']);
+        $patientDemo = array(
+            'LogID' => isset($LogID) ? $LogID : null,
+            'patientStreetAddress' => isset($data['patientStreetAddress']) ? $data['patientStreetAddress'] : '',
+            'patientBrgyCode' => isset($data['patientBrgyAddress']) ? $data['patientBrgyAddress'] : '',
+            'patientMundCode' => isset($data['patientMunAddress']) ? $data['patientMunAddress'] : '',
+            'patientProvCode' => isset($data['patientProvAddress']) ? $data['patientProvAddress'] : '',
+            'patientRegCode' => isset($data['patientRegAddress']) ? $data['patientRegAddress'] : '',
+            'patientZipCode' => isset($data['patientZipAddress']) ? $data['patientZipAddress'] : ''
+        );
      
-        $patientClinic=array('LogID'=>$LogID,
-        'clinicalDiagnosis'=>$data['clinicalDiagnosis'],
-        'clinicalHistory'=>$data['clinicalHistory'] ,
-        'physicalExamination'=>$data['physicalExamination'],
-        'chiefComplaint'=>$data['chiefComplaint'],
-        'findings'=>$data['findings'],
-        'vitals'=>json_encode($data['vitalSign']));
+        $patientClinic = array(
+            'LogID' => isset($LogID) ? $LogID : null,
+            'clinicalDiagnosis' => isset($data['clinicalDiagnosis']) ? $data['clinicalDiagnosis'] : '',
+            'clinicalHistory' => isset($data['clinicalHistory']) ? $data['clinicalHistory'] : '',
+            'physicalExamination' => isset($data['physicalExamination']) ? $data['physicalExamination'] : '',
+            'chiefComplaint' => isset($data['chiefComplaint']) ? $data['chiefComplaint'] : '',
+            'findings' => isset($data['findings']) ? $data['findings'] : '',
+            'vitals' => isset($data['vitalSign']) ? $data['vitalSign'] : ''
+        );
+      
         
         $track=array('LogID'=>$LogID);
      
@@ -773,9 +555,10 @@ if ( !function_exists('online') ) {
             'clinic'=>$patientClinic,
             'refer'=>$provRefer,
             'consu'=>$provConsu);
-
-        $trans = $model->referralTransaction($param);
-        if ($trans['code'] == '200') { 
+       
+         $trans = $model->referralTransaction($param);
+       
+        if ($trans['code']==="200") { 
             $response = [
                 'LogID' => $LogID,
                 'code' => $trans['code'],
@@ -787,7 +570,7 @@ if ( !function_exists('online') ) {
         } else {
             $response = [
                 'code' => $trans['code'],
-                'message' => $trans['message'],
+                'response' => $trans['message'],
                 'date' => date('m/d/Y H:i:s')
             ];
             return json_encode($response);

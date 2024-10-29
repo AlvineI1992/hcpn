@@ -135,42 +135,71 @@ class ReferralModel extends Model
 	{
 		try {
 			$this->db->transBegin();
-				$insInfo = $this->db->table($this->info);
-					$insInfo->insert($param['info']);
-					if(!$insInfo) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-				$insPat = $this->db->table($this->patient);
-					$insPat->insert($param['patient']);
-					if(!$insPat) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-				$insDemo = $this->db->table($this->demographic);
-					$insDemo->insert($param['demo']);
-					if(!$insDemo) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-				$insClinic = $this->db->table($this->clinic);	
-					$insClinic->insert($param['clinic']);
-					if(!$insClinic) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-				$insCons = $this->db->table($this->provider);
-					$insCons->insert($param['consu']);
-					if(!$insCons) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-				$insRefer = $this->db->table($this->provider);
-					$insRefer->insert($param['refer']);
-					if(!$insRefer) throw new Exception($this->db->_error_message(), $this->db->_error_number());
-			if ($this->db->transStatus() === false) {
-				$this->db->transRollback();
-				return $response=array(
-					'code'=>'500',
-					'message'=>'Failed!');
-			} else {
-				$this->db->transCommit();
-				return $response=array(
-					'code'=>'200',
-					'message'=>'Success!');
-			}	
+			$insInfo = $this->db->table($this->info);
+			$insInfo->insert($param['info']);
+			if (!$insInfo) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+	
+			$insPat = $this->db->table($this->patient);
+			$insPat->insert($param['patient']);
+			if (!$insPat) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+	
+			$insDemo = $this->db->table($this->demographic);
+			$insDemo->insert($param['demo']);
+			if (!$insDemo) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+	
+			$insClinic = $this->db->table($this->clinic);    
+			$insClinic->insert($param['clinic']);
+			if (!$insClinic) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+	
+			$insCons = $this->db->table($this->provider);
+			$insCons->insert($param['consu']);
+			if (!$insCons) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+			$insRefer = $this->db->table($this->provider);
+
+			$insRefer->insert($param['refer']);
+
+			if (!$insRefer) {
+				$dbError = $this->db->error();
+				throw new Exception($dbError['message'], $dbError['code']);
+			}
+		 if ($this->db->transStatus() === false) {
+            // Transaction failed, roll back and retrieve error
+            $this->db->transRollback();
+            $dbError = $this->db->error();
+            return array(
+                'code' => '500',
+                'message' => 'Transaction failed - ' . $dbError['message'],
+                'db_code' => $dbError['code']
+            );
+        } else {
+            $this->db->transCommit();
+            return array(
+                'code' => '200',
+                'message' => 'Transaction successful!'
+            );
+        }
+			
 		}catch (\Exception $e) {
-			$this->db->transRollback();
-			 
 			  return $response=array(
 					'code'=>$e->getCode(),
 					'message'=>$e->getMessage());
 			log_message('error', sprintf('%s : %s : DB transaction failed. Error no: %s, Error msg:%s, Last query: %s', __CLASS__, __FUNCTION__, $e->getCode(), $e->getMessage(), print_r($this->main_db->last_query(), TRUE)));
+
 		}
 	}
 	
@@ -535,8 +564,8 @@ class ReferralModel extends Model
 	public  function checkReferralToExist($ids)
 	{	
 		$query = $this->db->table('referral_patientinfo');
-		$query->select('referral_information.logid');
-		$query->join('referral_information', 'referral_information.logid = referral_patientinfo.logid','inner');
+		$query->select('referral_information.LogID');
+		$query->join('referral_information', 'referral_information.LogID = referral_patientinfo.LogID','inner');
 		$query->where($ids);		
 		return $query->get()->getRow();
 	}

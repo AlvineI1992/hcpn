@@ -91,7 +91,6 @@ class ReferralWSController extends BaseController
 		'encoded',
 		'Webservice');
 		$response = service('response');
-
 	}
 	
     public function index()
@@ -101,8 +100,6 @@ class ReferralWSController extends BaseController
 		if (empty($input)) {
 			$input = $this->request->getBody();
 		}
-	
-		log_message('debug', 'SOAP Request Input: ' . $input);
 	
 		if ($this->request->uri->getSegment(2) == 'wsdl') {
 			$_SERVER['QUERY_STRING'] = 'wsdl';
