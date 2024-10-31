@@ -12,7 +12,8 @@
         "fortawesome/font-awesome": "^6.1",
         "agungsugiarto/boilerplate": "^1.1",
         "myth/auth": "^1.2",
-        "tatter/audits": "^1.1"
+        "tatter/audits": "^1.1",
+        "firebase/php-jwt": "^6.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
